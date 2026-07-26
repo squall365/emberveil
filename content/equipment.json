@@ -1,0 +1,5 @@
+[
+  {"id": "greatblade", "name": "Greatblade", "slot": "weapon", "atk": 6, "def": 0, "mag": 0},
+  {"id": "wardplate", "name": "Wardplate", "slot": "armor", "atk": 0, "def": 5, "mag": 0},
+  {"id": "wardcharm", "name": "Wardcharm", "slot": "accessory", "atk": 0, "def": 0, "mag": 3}
+]

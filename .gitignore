@@ -1,0 +1,11 @@
+# Godot build/cache
+.godot/
+exports/
+*.import
+
+# WorkBuddy tooling memory (not game source)
+.workbuddy/
+
+# OS
+.DS_Store
+Thumbs.db

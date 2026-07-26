@@ -1,0 +1,8 @@
+{
+  "groups": ["jobs", "sigils", "enemies", "items", "equipment", "dungeons"],
+  "atlases": [
+    {"id": "atlas_characters", "kind": "Characters", "mipmaps": false},
+    {"id": "atlas_environment", "kind": "Environment", "maxFacade": [200, 240]},
+    {"id": "atlas_uivfx", "kind": "UI_VFX", "vfxTypes": 8}
+  ]
+}

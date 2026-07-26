@@ -1,0 +1,6 @@
+[
+  {"id": "vanguard", "name": "Vanguard", "baseHP": 120, "baseMP": 10, "baseATK": 14, "baseDEF": 12, "baseMAG": 4, "baseRES": 10, "baseSPD": 8, "affinity": "none"},
+  {"id": "channeler", "name": "Channeler", "baseHP": 70, "baseMP": 40, "baseATK": 6, "baseDEF": 5, "baseMAG": 16, "baseRES": 9, "baseSPD": 10, "affinity": "ember"},
+  {"id": "warden", "name": "Warden", "baseHP": 95, "baseMP": 20, "baseATK": 10, "baseDEF": 10, "baseMAG": 9, "baseRES": 12, "baseSPD": 9, "affinity": "stone"},
+  {"id": "skirmisher", "name": "Skirmisher", "baseHP": 80, "baseMP": 30, "baseATK": 8, "baseDEF": 7, "baseMAG": 12, "baseRES": 11, "baseSPD": 11, "affinity": "storm"}
+]

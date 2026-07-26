@@ -1,0 +1,51 @@
+name: EMBERVEIL CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Gates (all must pass to merge):
+#   A/C ⛔ boot-to-Title headless
+#   G ⛔  GUT unit + integration + smoke
+#   E ⛔  asset budget audit (16MB / 4x1024 / grain) + 48-color palette
+#   B/D   content-lint + combat RNG lint guard
+
+jobs:
+  godot:
+    runs-on: ubuntu-latest
+    env:
+      GODOT_VERSION: "4.3"   # pin to the studio's locked Godot 4 stable
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Godot 4 (headless)
+        run: |
+          curl -L -o godot.zip \
+            "https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -o godot.zip
+          mv "Godot_v${GODOT_VERSION}-stable_linux.x86_64" godot
+          chmod +x godot
+
+      - name: Import project + Boot to Title (checklist A/C)
+        run: ./godot --headless --path . --quit
+
+      - name: GUT tests — unit / integration / smoke (checklist G)
+        run: ./godot --headless --path . -s addons/gut/gut_cmdln.gd -gdir=res://tests -gexit
+
+      - name: Asset budget audit (checklist E ⛔)
+        run: python3 tools/asset_audit.py --root content --root assets
+
+      - name: Palette validator — <=48 colors (checklist E ⛔)
+        run: ./godot --headless --path . --script tools/palette_validator.gd
+
+      - name: Content-lint (checklist F)
+        run: python3 tools/content_lint.py || ./godot --headless --path . --script tools/content_lint.gd
+
+      - name: Combat RNG lint guard (checklist C ⛔)
+        # determinism: no global RNG inside combat/battle trees
+        run: |
+          if grep -rnE 'randi\(|randf\(|OS\.rand' src/combat src/battle | grep -vE '^\s*#'; then
+            echo "RNG LEAK in combat/battle — route all randomness through RNGService"
+            exit 1
+          fi

@@ -1,0 +1,9 @@
+[
+  {"id": "ember", "element": "Ember", "shape": "flame", "tier": 1},
+  {"id": "frost", "element": "Frost", "shape": "snow", "tier": 1},
+  {"id": "storm", "element": "Storm", "shape": "bolt", "tier": 1},
+  {"id": "stone", "element": "Stone", "shape": "mountain", "tier": 1},
+  {"id": "gale", "element": "Gale", "shape": "wind", "tier": 1},
+  {"id": "lumen", "element": "Lumen", "shape": "sun", "tier": 1},
+  {"id": "umbra", "element": "Umbra", "shape": "moon", "tier": 1}
+]

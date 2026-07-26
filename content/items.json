@@ -1,0 +1,3 @@
+[
+  {"id": "herb", "name": "Herb", "kind": "consumable", "effect": "heal", "power": 30}
+]

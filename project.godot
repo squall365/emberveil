@@ -1,0 +1,58 @@
+; Engine configuration for EMBERVEIL (Godot 4, HTML5 / WebGL2)
+; Single local slot, pure offline. Renderer = gl_compatibility for low-end web reach.
+
+[application]
+
+config/name="EMBERVEIL"
+config/description="Original-IP turn-based party JRPG (web / 小游戏)."
+run/main_scene="res://scenes/boot/Boot.tscn"
+config/features=PackedStringArray("4.3", "GL Compatibility")
+config/quit_on_go_back=true
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+; Single-threaded web: no threads; use coroutines. Keep textures tight (see asset-spec §3).
+textures/vram_compression/import_etc=true
+environment/defaults/default_clear_color=Color(0.168627, 0.105882, 0.180392, 1) ; Deep Plum #2B1B2E
+
+[input]
+
+; Logical action set (ux-spec §3.1). Default bindings are also persisted in
+; SettingsManager.DEFAULTS and applied to InputMap at boot.
+ui_accept={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":0,"physical_keycode":4194326},{"type":"InputEventKey","keycode":0,"physical_keycode":4194327}]}
+ui_cancel={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":0,"physical_keycode":4194327}]}
+ui_up={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":0,"physical_keycode":4194321}]}
+ui_down={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":0,"physical_keycode":4194322}]}
+ui_left={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":0,"physical_keycode":4194320}]}
+ui_right={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":0,"physical_keycode":4194323}]}
+cmd_attack={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":0,"physical_keycode":49}]}
+cmd_skill={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":0,"physical_keycode":50}]}
+cmd_elemental={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":0,"physical_keycode":51}]}
+cmd_defend={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":0,"physical_keycode":52}]}
+cmd_item={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":0,"physical_keycode":53}]}
+cmd_run={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":0,"physical_keycode":82}]}
+select_hero_1={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":0,"physical_keycode":4194338}]}
+select_hero_2={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":0,"physical_keycode":4194339}]}
+select_hero_3={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":0,"physical_keycode":4194340}]}
+select_hero_4={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":0,"physical_keycode":4194341}]}
+toggle_settings={"deadzone":0.5,"events":[{"type":"InputEventKey","keycode":0,"physical_keycode":4194327}]}
+
+[autoload]
+
+SettingsManager="*res://src/autoloads/settings_manager.gd"
+; RNGService is an instantiable class_name (NOT an autoload singleton) so combat
+; determinism tests can build seeded instances via RNGService.new(). The architecture
+; autoload list is updated accordingly (see docs/architecture/main-architecture.md).
+EventBus="*res://src/autoloads/event_bus.gd"
+AssetRegistry="*res://src/autoloads/asset_registry.gd"
+ElementRegistry="*res://src/autoloads/element_registry.gd"
+WardCodex="*res://src/autoloads/ward_codex.gd"
+SaveManager="*res://src/autoloads/save_manager.gd"
+PartyManager="*res://src/autoloads/party_manager.gd"
+ProgressionManager="*res://src/autoloads/progression_manager.gd"
+WorldDirector="*res://src/autoloads/world_director.gd"
+SceneManager="*res://src/autoloads/scene_manager.gd"
+AudioBus="*res://src/autoloads/audio_bus.gd"
+Analytics="*res://src/autoloads/analytics.gd"

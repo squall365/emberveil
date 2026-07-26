@@ -1,0 +1,3 @@
+[
+  {"id": "sundered_ward", "name": "Sundered Ward", "floors": [{"idx": 0, "encounters": ["smoke_encounter"], "isBoss": false}]}
+]

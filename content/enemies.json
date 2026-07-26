@@ -1,0 +1,4 @@
+[
+  {"id": "huskling", "name": "Huskling", "HP": 40, "MP": 0, "ATK": 10, "DEF": 6, "MAG": 4, "RES": 4, "SPD": 7, "affinity": "none"},
+  {"id": "frostmote", "name": "Frostmote", "HP": 36, "MP": 0, "ATK": 8, "DEF": 4, "MAG": 10, "RES": 6, "SPD": 9, "affinity": "frost"}
+]
