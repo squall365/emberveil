@@ -19,33 +19,36 @@ func setup(state: Dictionary, rng: RNGService, callback: Object) -> void:
 	_refresh_display()
 
 func _build_gui() -> void:
+	var vs := get_viewport().get_visible_rect().size
 	_gui = Control.new()
-	_gui.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_gui.position = Vector2.ZERO
+	_gui.size = vs
 	add_child(_gui)
 
 	var bg := ColorRect.new()
-	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	bg.position = Vector2.ZERO
+	bg.size = vs
 	bg.color = Color(0.169, 0.106, 0.180, 0.92)
 	_gui.add_child(bg)
 
 	var label := Label.new()
-	label.position = Vector2(10, 10)
-	label.size = Vector2(600, 24)
-	label.add_theme_font_size_override("font_size", 16)
+	label.position = Vector2(20, 20)
+	label.size = Vector2(vs.x - 40, 28)
+	label.add_theme_font_size_override("font_size", 18)
 	label.add_theme_color_override("font_color", Color(0.949, 0.851, 0.627, 1.0))
 	label.text = "Battle: %s" % ("Boss fight!" if _is_boss else "Enemy encounter")
 	_gui.add_child(label)
 
 	var btn := Button.new()
 	btn.text = "Attack"
-	btn.position = Vector2(10, 400)
+	btn.position = Vector2(vs.x - 320, vs.y - 60)
 	btn.size = Vector2(140, 44)
 	btn.pressed.connect(_on_attack_pressed)
 	_gui.add_child(btn)
 
 	var defend_btn := Button.new()
 	defend_btn.text = "Defend"
-	defend_btn.position = Vector2(160, 400)
+	defend_btn.position = Vector2(vs.x - 170, vs.y - 60)
 	defend_btn.size = Vector2(140, 44)
 	_gui.add_child(defend_btn)
 	# Defend placeholder for Sprint 3; wired later.
@@ -53,8 +56,8 @@ func _build_gui() -> void:
 	# Message label at bottom
 	var msg := Label.new()
 	msg.name = "Message"
-	msg.position = Vector2(10, 460)
-	msg.size = Vector2(600, 24)
+	msg.position = Vector2(20, vs.y - 100)
+	msg.size = Vector2(vs.x - 40, 28)
 	msg.add_theme_color_override("font_color", Color(0.851, 0.851, 0.851, 1.0))
 	msg.text = "Tap Attack to begin."
 	_gui.add_child(msg)
