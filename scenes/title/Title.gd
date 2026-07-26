@@ -33,4 +33,4 @@ func _ready() -> void:
 
 func _on_start_pressed() -> void:
 	SceneManager.new_run_confirmed()
-	SceneManager.go_to("Town")
+	WorldDirector.enter_town()
