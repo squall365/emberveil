@@ -20,11 +20,22 @@ const NODES := [
 var _focus: int = 0
 
 func _ready() -> void:
+	_connect_buttons()
 	_refresh_ui()
 
 func setup(_params: Dictionary = {}) -> void:
 	_focus = 0
+	_connect_buttons()
 	_refresh_ui()
+
+func _connect_buttons() -> void:
+	for nd in NODES:
+		var btn = get_node_or_null("Nodes/" + nd["id"])
+		if btn != null and not btn.pressed.is_connected(_on_node_pressed.bind(nd)):
+			btn.pressed.connect(_on_node_pressed.bind(nd))
+
+func _on_node_pressed(nd: Dictionary) -> void:
+	_activate_node(str(nd["action"]), bool(nd["locked"]))
 
 func _activate_node(action: String, locked: bool) -> void:
 	if locked:
