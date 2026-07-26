@@ -44,11 +44,11 @@ func _swap_world_child(scene_path: String, params: Dictionary = {}) -> void:
 	for child in world.get_children():
 		if child.has_meta("world_child"):
 			child.queue_free()
-	var scn := load(scene_path)
+	var scn: PackedScene = load(scene_path)
 	if scn == null:
 		push_warning("[WorldDirector] failed to load %s" % scene_path)
 		return
-	var inst := scn.instantiate()
+	var inst: Node = scn.instantiate()
 	inst.set_meta("world_child", true)
 	world.add_child(inst)
 	if inst.has_method("setup"):
@@ -62,9 +62,10 @@ func _ensure_world() -> Node:
 		_world_root = tree.current_scene
 		return _world_root
 	if tree != null:
-		var scn := load(WORLD_SCENE)
+		var scn: PackedScene = load(WORLD_SCENE)
 		if scn != null:
-			_world_root = scn.instantiate()
+			var root: Node = scn.instantiate()
+			_world_root = root
 			_world_root.set_meta("is_world", true)
 			tree.get_root().add_child(_world_root)
 	return _world_root

@@ -121,8 +121,9 @@ func _start_battle(encounter_id: String, is_boss: bool) -> void:
 		"log": [],
 		"isBoss": is_boss
 	}
-	var battle = load("res://scenes/battle/Battle.tscn").instantiate()
-	battle.setup(state, rng, self)
+	var battle: Node = load("res://scenes/battle/Battle.tscn").instantiate()
+	if battle.has_method("setup"):
+		battle.setup(state, rng, self)
 	get_tree().get_root().add_child(battle)   # overlay; never serialized
 
 # GAP-11 / ADR-002: deterministic, DERIVED (non-persisted) battle nonce. Same (seed, floor,
