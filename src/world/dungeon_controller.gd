@@ -104,6 +104,10 @@ func _enter_current_room() -> void:
 			_enter_puzzle(room)
 		"reward":
 			_open_reward(room)
+	# After any room is cleared, check if the whole floor is done.
+	if _floor_fully_cleared():
+		WorldDirector.clear_floor(_floor_idx)
+		_advance_floor_or_return()
 
 # ---- battle launch (E9.4) ----
 func _start_battle(encounter_id: String, is_boss: bool) -> void:
