@@ -5,6 +5,7 @@ extends Node
 
 func track(event: String, data: Dictionary = {}) -> void:
 	# No-op placeholder — pure-offline build. Parameters intentionally unused.
+	pass
 
 func is_enabled() -> bool:
 	return false
