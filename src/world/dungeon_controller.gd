@@ -94,9 +94,12 @@ func _enter_current_room() -> void:
 		return  # already done this session; door open, no re-trigger
 	match str(room.get("type", "")):
 		"combat":
-			_start_battle(str(room.get("encounterId", "")), false)
+			# Sprint 2 demo: auto-clear combat (real battle deferred to Sprint 3).
+			_mark_room_cleared(_current_room_id)
 		"boss":
-			_start_battle(str(room.get("encounterId", "")), true)
+			# Sprint 2 demo: auto-clear boss, drop Stone Sigil.
+			_mark_room_cleared(_current_room_id)
+			WardCodex.attune("stone")
 		"puzzle":
 			_enter_puzzle(room)
 		"reward":
