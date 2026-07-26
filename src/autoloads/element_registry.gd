@@ -1,5 +1,5 @@
 extends Node
-class_name ElementRegistry
+# class_name ElementRegistry
 # 7-element affinity ring (GDD §2). Symmetric cycle, strong=1.5 / weak=0.67 / neutral=1.0.
 # Exposed as an autoload singleton; tests call ElementRegistry.affinity(...) on the instance.
 # Cycle (strong direction): Ember▸Frost▸Storm▸Stone▸Gale▸Lumen▸Umbra▸Ember.

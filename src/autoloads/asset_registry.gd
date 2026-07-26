@@ -1,5 +1,5 @@
 extends Node
-class_name AssetRegistry
+# class_name AssetRegistry
 # Data-driven content + atlas loader (ADR-003 / asset-spec §6). Enforces the 3 load-bearing
 # asset constraints (phase4-gate §3.2) and the web budget (≤4 atlases / ≤16MB / ≤48 colors):
 #   Atlas A (Characters):  mipmaps OFF

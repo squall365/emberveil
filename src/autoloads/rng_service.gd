@@ -1,5 +1,5 @@
 extends RefCounted
-class_name RNGService
+# class_name RNGService
 # Deterministic seedable PRNG (ADR-002). The SOLE randomness source for combat/replays.
 # xorshift32 — no global RNG, no threads, identical output across platforms for a given seed,
 # so (seed, action-list) replays are bit-stable. Instantiated via RNGService.new(); NOT an

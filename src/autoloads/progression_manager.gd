@@ -1,5 +1,5 @@
 extends Node
-class_name ProgressionManager
+# class_name ProgressionManager
 # XP / level / equipment / resonance (E2-K). Sprint 1: structure + pure add_xp/level calc.
 # Sprint 2 (E9.4/GAP-8): apply_battle_xp splits a battle's total XP across the party and
 # writes levels back into the run-state party (xp_for_level = 100*level per GAP-10).

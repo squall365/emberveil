@@ -1,5 +1,5 @@
 extends Node
-class_name SettingsManager
+# class_name SettingsManager
 # Settings storage (phase4-gate §3.1). Global key "emberveil.settings.v1" is AUTHORITATIVE;
 # RunState.settings is a mirror. Expanded schema (ux-spec §4.2). ADDITIVE fields only — the
 # locked save serializer is never broken. For web, persisted in localStorage; headless keeps

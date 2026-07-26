@@ -1,5 +1,5 @@
 extends Node
-class_name EventBus
+# class_name EventBus
 # UI-only event backbone. Logic MUST NOT mutate state here (ADR-002); scenes subscribe
 # and react. Keeps gameplay/sim decoupled from presentation.
 
