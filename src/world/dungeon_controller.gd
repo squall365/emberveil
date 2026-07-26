@@ -187,7 +187,8 @@ func _on_battle_resolved(result: Dictionary) -> void:
 		return
 	# WIN: write ally hp/mp/level/xp back into PartyManager (carry across rooms, decision 2.5).
 	var state: Dictionary = result.get("state", {})
-	var allies: Array = state.get("combatants", []).filter(
+	var raw_combatants: Array = state.get("combatants", [])
+	var allies: Array = raw_combatants.filter(
 		func(c): return str(c.get("side", "")) == "ally")
 	PartyManager.record_ally_outcome(allies)
 	# Apply the encounter XP split across the run-state party (final writer => survives sync).

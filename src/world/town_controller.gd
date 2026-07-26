@@ -70,6 +70,7 @@ func _enter_dungeon_via_sage() -> void:
 		var rs: Dictionary = SceneManager.get_run_state()
 		rs["worldState"]["questAccepted"] = true
 		SceneManager.commit_run_state(rs)
+		quest_accepted = true   # re-read after mutation
 	var boss_defeated: bool = bool(ws.get("dungeon", {}).get("bossDefeated", false))
 	if quest_accepted and not boss_defeated:
 		WorldDirector.enter_dungeon()
