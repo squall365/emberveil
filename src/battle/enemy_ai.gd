@@ -17,5 +17,4 @@ func choose_action(state: Dictionary, actor: Dictionary, rng: RNGService) -> Dic
 		if int(a.get("HP", 0)) < int(target.get("HP", 0)):
 			target = a
 	# rng is threaded through for future stochastic policies; unused in Sprint 1.
-	_ = rng
 	return {"actorId": actor_id, "type": "Attack", "targetIds": [str(target.get("id", ""))]}
