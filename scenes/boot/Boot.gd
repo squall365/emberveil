@@ -4,4 +4,6 @@ extends Node
 
 func _ready() -> void:
 	SceneManager.go_to("Title")
-	get_tree().change_scene_to_file("res://scenes/title/Title.tscn")
+	# Defer the scene swap until after _ready finishes; Godot 4.7 complains the
+	# parent is busy adding/removing children otherwise.
+	get_tree().call_deferred("change_scene_to_file", "res://scenes/title/Title.tscn")

@@ -33,4 +33,5 @@ func _ready() -> void:
 
 func _on_start_pressed() -> void:
 	SceneManager.new_run_confirmed()
-	get_tree().change_scene_to_file("res://scenes/world/World.tscn")
+	# Defer the scene swap; Godot 4.7 complains about busy parent otherwise.
+	get_tree().call_deferred("change_scene_to_file", "res://scenes/world/World.tscn")

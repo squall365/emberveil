@@ -48,7 +48,7 @@ func _resolve_loop() -> void:
 		if str(actor.get("side", "")) == "ally":
 			action = _auto_ally_action(actor)
 		else:
-			action = EnemyAI.choose_action(_state, actor, _rng)
+			action = EnemyAI.new().choose_action(_state, actor, _rng)
 		var res := BattleResolver.resolve_action(_state, action, _rng)
 		_state = res[0]
 		EventBus.battle_event.emit({"actorId": aid, "action": action, "events": res[1]})
