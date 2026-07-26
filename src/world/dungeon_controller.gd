@@ -242,15 +242,18 @@ func _open_reward(room: Dictionary) -> void:
 	SceneManager.commit_run_state(rs)
 	_mark_room_cleared(str(room.get("id", "")))
 
-# ---- puzzle (decision 2.4: wrong order => full reset; leaving room resets) ----
+# ---- puzzle (Sprint 2: auto-cleared on entry; Sprint 3 will have stone-tapping UI) ----
 func _enter_puzzle(room: Dictionary) -> void:
 	if _session_cleared.has(str(room.get("id", ""))):
-		return  # already solved this session; door open
-	_in_puzzle = true
-	_puzzle_order = room.get("puzzleOrder", [])
-	_puzzle_progress = 0
-	_puzzle_solved = false
-	_stone_focus = 0
+		return
+	# Auto-clear puzzle for Sprint 2 demo (no stone-tapping UI yet).
+	_mark_room_cleared(str(room.get("id", "")))
+	_in_puzzle = false
+	_puzzle_solved = true
+	# After auto-solving puzzle, advance to next room if it's the cursor.
+	var rc: int = _room_cursor + 1
+	if rc < _rooms.size():
+		_room_cursor = rc
 	_refresh_ui()
 
 func _on_stone_tapped(element: String) -> void:
