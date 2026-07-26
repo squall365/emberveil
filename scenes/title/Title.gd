@@ -1,30 +1,24 @@
 extends Control
-# EMBERVEIL Title — builds UI procedurally (avoids tspn format issues).
-# Sprint 1 placeholder → Sprint 2+: swap to real art logo.
+# EMBERVEIL Title — builds UI procedurally with anchor presets so layout
+# works regardless of viewport size.
 
 func _ready() -> void:
-	# Dark background — size will be set after the viewport is known.
-	# Use a ColorRect with ember dark theme.
+	# Backdrop.
 	var bg := ColorRect.new()
 	bg.color = Color("#2B1B2E")
-	bg.set_anchor(SIDE_LEFT, 0.0)
-	bg.set_anchor(SIDE_RIGHT, 1.0)
-	bg.set_anchor(SIDE_TOP, 0.0)
-	bg.set_anchor(SIDE_BOTTOM, 1.0)
+	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(bg)
 
-	# Center the content vertically.
+	# Center column.
 	var center := CenterContainer.new()
-	center.set_anchor(SIDE_LEFT, 0.0)
-	center.set_anchor(SIDE_RIGHT, 1.0)
-	center.set_anchor(SIDE_TOP, 0.0)
-	center.set_anchor(SIDE_BOTTOM, 1.0)
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(center)
 
 	var col := VBoxContainer.new()
 	col.add_theme_constant_override("separation", 32)
 	center.add_child(col)
 
+	# Title label.
 	var logo := Label.new()
 	logo.text = "EMBERVEIL"
 	logo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -32,11 +26,12 @@ func _ready() -> void:
 	logo.add_theme_color_override("font_color", Color("#F2D9A0"))
 	col.add_child(logo)
 
+	# Start button.
 	var btn := Button.new()
 	btn.text = "Start"
 	btn.custom_minimum_size = Vector2(220, 48)
-	btn.pressed.connect(_on_start_pressed)
 	col.add_child(btn)
+	btn.pressed.connect(_on_start_pressed)
 
 
 func _on_start_pressed() -> void:
