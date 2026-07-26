@@ -122,9 +122,10 @@ func _start_battle(encounter_id: String, is_boss: bool) -> void:
 		"isBoss": is_boss
 	}
 	var battle: Node = load("res://scenes/battle/Battle.tscn").instantiate()
+	get_tree().get_root().add_child(battle)   # overlay; never serialized
+	# setup() runs synchronously (auto-resolved), so add to tree first.
 	if battle.has_method("setup"):
 		battle.setup(state, rng, self)
-	get_tree().get_root().add_child(battle)   # overlay; never serialized
 
 # GAP-11 / ADR-002: deterministic, DERIVED (non-persisted) battle nonce. Same (seed, floor,
 # room, boss) => same battle. No counter is stored; no save is mutated.
