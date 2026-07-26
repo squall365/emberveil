@@ -1,4 +1,9 @@
 [
-  {"id": "huskling", "name": "Huskling", "HP": 40, "MP": 0, "ATK": 10, "DEF": 6, "MAG": 4, "RES": 4, "SPD": 7, "affinity": "none"},
-  {"id": "frostmote", "name": "Frostmote", "HP": 36, "MP": 0, "ATK": 8, "DEF": 4, "MAG": 10, "RES": 6, "SPD": 9, "affinity": "frost"}
+  {"id": "huskling", "name": "Huskling", "HP": 40, "MP": 0, "ATK": 10, "DEF": 6, "MAG": 4, "RES": 4, "SPD": 7, "affinity": "none", "xpValue": 8},
+  {"id": "frostmote", "name": "Frostmote", "HP": 36, "MP": 0, "ATK": 8, "DEF": 4, "MAG": 10, "RES": 6, "SPD": 9, "affinity": "frost", "xpValue": 10},
+  {"id": "stoneling", "name": "Stoneling", "HP": 60, "MP": 0, "ATK": 9, "DEF": 14, "MAG": 3, "RES": 10, "SPD": 5, "affinity": "stone", "xpValue": 12},
+  {"id": "stormling", "name": "Stormling", "HP": 44, "MP": 0, "ATK": 11, "DEF": 6, "MAG": 9, "RES": 6, "SPD": 12, "affinity": "storm", "xpValue": 12},
+  {"id": "wisp", "name": "Wisp", "HP": 30, "MP": 0, "ATK": 7, "DEF": 4, "MAG": 6, "RES": 5, "SPD": 8, "affinity": "none", "xpValue": 8},
+  {"id": "galekin", "name": "Galekin", "HP": 48, "MP": 0, "ATK": 10, "DEF": 7, "MAG": 11, "RES": 7, "SPD": 13, "affinity": "gale", "xpValue": 14},
+  {"id": "sigil_twisted_warden", "name": "Sigil-Twisted Warden", "HP": 260, "MP": 20, "ATK": 16, "DEF": 12, "MAG": 14, "RES": 12, "SPD": 8, "affinity": "stone", "xpValue": 120}
 ]

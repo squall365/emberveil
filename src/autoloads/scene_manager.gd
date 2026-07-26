@@ -1,8 +1,10 @@
 extends Node
 class_name SceneManager
 # Scene routing + safe-node save orchestration (E2-G / E4-D / E6-A).
-# Sprint 1: tracks the LOGICAL current node and drives safe-node saves. Real scene-tree
-# swaps (change_scene) land in Sprint 2; here go_to() updates logical state + persists.
+# Sprint 1: tracked the LOGICAL current node and drove safe-node saves. Sprint 2
+# (E9.1/GAP-3) adds read-only accessors + a single commit writer so World children
+# (Town/Dungeon) can read worldState and write battle outcomes back. Real scene-tree
+# swaps live in WorldDirector._swap_world_child.
 # Pure offline: New Run is local (no cloud/account). Mid-combat state is NEVER persisted
 # (safe-node-only rule) — only Town entry and floor clear are safe nodes.
 
@@ -12,9 +14,20 @@ var _run_state: Dictionary = {}
 func current_node() -> String:
 	return _current_node
 
+# GAP-3: read-only accessors so Town/Dungeon scene scripts can read the run/world state
+# without SceneManager leaking its private _run_state dict as a mutable reference.
+func get_run_state() -> Dictionary:
+	return _run_state.duplicate(true)
+
+func get_world_state() -> Dictionary:
+	return _run_state.get("worldState", {})
+
 func new_run_confirmed() -> void:
 	# Pure-offline: no cloud/login/account. Create the run locally.
+	# GAP-12: seed the default 4-job party so Dungeon entry always has 4 combatants.
 	_run_state = _default_run_state()
+	PartyManager.new_run_defaults()
+	_run_state["party"] = PartyManager.all_members()
 
 func go_to(node: String, params: Dictionary = {}) -> void:
 	_current_node = node
@@ -40,8 +53,18 @@ func clear_floor(floor_idx: int) -> void:
 	_run_state = _ensure_run(_run_state)
 	if not _run_state["worldState"]["dungeon"]["clearedFloors"].has(floor_idx):
 		_run_state["worldState"]["dungeon"]["clearedFloors"].append(floor_idx)
+	# Advance the saved current-floor pointer so a resume (decision 2.6) enters the NEXT
+	# floor, not the one just cleared. Out-of-range past the last floor is harmless: the
+	# boss clear path returns to Town instead of re-entering.
+	_run_state["worldState"]["dungeon"]["floorIdx"] = int(floor_idx) + 1
 	_run_state["worldState"]["currentNode"] = "town"
 	SaveManager.save(_run_state, true)  # floor clear IS a safe node
+
+# E9.4: commit a (mutated) run-state back into the authoritative holder so subsequent
+# safe-node saves (Town entry / floor clear) persist battle outcomes (xp / hp / mp / gold).
+# Read via get_run_state() (GAP-3); write via this single owner method only.
+func commit_run_state(rs: Dictionary) -> void:
+	_run_state = _ensure_run(rs)
 
 func _ensure_run(state: Dictionary) -> Dictionary:
 	if state == null or state.is_empty():

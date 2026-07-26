@@ -1,3 +1,8 @@
 [gd_scene load_steps=1 format=3]
 
 [node name="World" type="Node"]
+# Resident root (architecture §2.2). Town/Dungeon are mounted as children by
+# WorldDirector._swap_world_child; the RunState is never reloaded => no save-scum.
+# WorldMount is the documented anchor for the active World child.
+
+[node name="WorldMount" type="Node" parent="."]

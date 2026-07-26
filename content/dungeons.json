@@ -1,3 +1,41 @@
 [
-  {"id": "sundered_ward", "name": "Sundered Ward", "floors": [{"idx": 0, "encounters": ["smoke_encounter"], "isBoss": false}]}
+  {
+    "id": "sundered_ward",
+    "name": "The Sundered Ward",
+    "floors": [
+      {
+        "idx": 0,
+        "rooms": [
+          {"id": "sw_f0_combat", "type": "combat", "encounterId": "sw_f0_combat", "puzzleOrder": [], "reward": {}},
+          {"id": "sw_f0_puzzle", "type": "puzzle", "encounterId": "", "puzzleOrder": ["ember", "frost", "storm"], "reward": {}},
+          {"id": "sw_f0_reward", "type": "reward", "encounterId": "", "puzzleOrder": [], "reward": {"gold": 20, "items": [{"id": "herb", "qty": 1}], "sigilId": ""}}
+        ]
+      },
+      {
+        "idx": 1,
+        "rooms": [
+          {"id": "sw_f1_combat", "type": "combat", "encounterId": "sw_f1_combat", "puzzleOrder": [], "reward": {}},
+          {"id": "sw_f1_puzzle", "type": "puzzle", "encounterId": "", "puzzleOrder": ["ember", "frost", "storm"], "reward": {}},
+          {"id": "sw_f1_reward", "type": "reward", "encounterId": "", "puzzleOrder": [], "reward": {"gold": 35, "items": [{"id": "herb", "qty": 2}], "sigilId": ""}}
+        ]
+      },
+      {
+        "idx": 2,
+        "rooms": [
+          {"id": "sw_f2_combat", "type": "combat", "encounterId": "sw_f2_combat", "puzzleOrder": [], "reward": {}},
+          {"id": "sw_f2_puzzle", "type": "puzzle", "encounterId": "", "puzzleOrder": ["ember", "frost", "storm"], "reward": {}},
+          {"id": "sw_f2_reward", "type": "reward", "encounterId": "", "puzzleOrder": [], "reward": {"gold": 50, "items": [{"id": "greatblade", "qty": 1}], "sigilId": ""}}
+        ]
+      },
+      {
+        "idx": 3,
+        "rooms": [
+          {"id": "sw_f3_combat", "type": "combat", "encounterId": "sw_f3_combat", "puzzleOrder": [], "reward": {}},
+          {"id": "sw_f3_puzzle", "type": "puzzle", "encounterId": "", "puzzleOrder": ["ember", "frost", "storm"], "reward": {}},
+          {"id": "sw_f3_reward", "type": "reward", "encounterId": "", "puzzleOrder": [], "reward": {"gold": 70, "items": [{"id": "wardplate", "qty": 1}], "sigilId": ""}},
+          {"id": "sw_f3_boss", "type": "boss", "encounterId": "sw_f3_boss", "puzzleOrder": [], "reward": {"gold": 100, "items": [], "sigilId": "stone"}}
+        ]
+      }
+    ]
+  }
 ]

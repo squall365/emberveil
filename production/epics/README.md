@@ -24,6 +24,7 @@ appears later must be a new Epic under L4, not retrofitted here.
 | E6 | Data-Driven Content | S1, S2, S3, S4, S5 (data) | F | Author MVP defs as .tres/JSON; content-lint CI; extension proof (L2) |
 | E7 | Test Harness & CI | — (cross-cutting) | G | GUT install, unit/integration/smoke suites, GitHub Actions CI (godot --headless + asset audit) |
 | E8 | Balance Spike | S2, S3, S4 (tuning) | H | Lock ATK/DEF/MAG/RES/SPD, xpToNext, spell power/cost, variance, AI aggression BEFORE combat numbers implemented |
+| E9 | Town / Dungeon 地图（Feature UI 垂直切片） | S5 (World Nodes) · S2 (战斗衔接) · S6 (安全存档) | — | World 常驻+真实切换、Hearthmoor 5 节点、Sundered Ward 4 层、CombatController 衔接 BattleResolver、回城+安全节点存档、ux-spec §3 输入（Sprint 2 首冲刺可玩核心） |
 
 ## 2. GDD System Coverage Matrix
 
@@ -35,7 +36,7 @@ Every MVP GDD system maps to at least one Epic (foundation ⛔ + feature stories
 | S2 | Combat | `CombatController`+`BattleResolver`+`EnemyAI` | E3 + E6 (enemy/spell data) | E3 combat scene + commands (Sprint 1 partial) |
 | S3 | Elements & Ward-Sigil | `ElementRegistry`+`WardCodex` | E2 (wiring) + E6 (sigil/spell data) | E3 Ward Codex casting in dock (Later) |
 | S4 | Progression | `ProgressionManager` | E2 (wiring) + E6 (item/equip data) | E2-K Progression UI (Later) |
-| S5 | World Nodes | `WorldDirector` (Town+Dungeon) | E2 (routing) + E6 (dungeon def) | E2-L Town/Dungeon scenes (Later) |
+| S5 | World Nodes | `WorldDirector` (Town+Dungeon) | E2 (routing) + E6 (dungeon def) | **E9** Town/Dungeon 地图（Sprint 2 首冲刺可玩核心：E9.1 World 骨架 / E9.2 Town / E9.3 Dungeon / E9.5 回城存档） |
 | S6 | Save/Load | `SaveManager` | E4 | full in Sprint 1 |
 
 ## 3. Dependency Graph & Suggested Execution Order
@@ -68,4 +69,4 @@ Acceptance Criteria (testable) · Sprint tag · ⛔ blocker flag · Depends-on.
 
 - **Sprint 1** (this plan → `production/sprint-1-plan.md`): all ⛔ stories from E1, E2, E3, E4, E7,
   plus E5/E6 scaffolding stubs. Exits when checklist A/B/C/D ⛔ are green.
-- **Sprint 2+**: remaining E3/E4 feature depth, E5/E6 full content, E8 lock, S1/S3/S4/S5 feature UIs.
+- **Sprint 2+**: **E9** Town/Dungeon 地图可玩核心（垂直切片）；remaining E3/E4 feature depth, E5/E6 full content, E8 lock, S1/S3/S4 feature UIs.

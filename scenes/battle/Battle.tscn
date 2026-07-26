@@ -1,3 +1,8 @@
-[gd_scene load_steps=1 format=3]
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/battle/combat_controller.gd" id="1_battle"]
 
 [node name="Battle" type="Node"]
+# Battle overlay. Instantiated PER battle by the Dungeon (get_tree().get_root().add_child)
+# and queue_freed by CombatController on resolution. NEVER serialized mid-battle (S6 / anti-scum).
+script = ExtResource("1_battle")
