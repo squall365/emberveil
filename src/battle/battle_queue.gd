@@ -16,7 +16,7 @@ func setup(combatants: Array) -> void:
 # Static helper: returns the initiative-ordered list of living combatant ids. Used to fill
 # BattleState["queue"] (GDD §3.5) and as the live ordering source.
 static func initiative_order(combatants: Array) -> Array:
-	var living := combatants.filter(func(c): return int(c.get("HP", 0)) > 0)
+	var living: Array = combatants.filter(func(c): return int(c.get("HP", 0)) > 0)
 	living.sort_custom(_cmp)
 	return living.map(func(c): return str(c.get("id", "")))
 

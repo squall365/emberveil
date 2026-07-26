@@ -59,7 +59,7 @@ func _resolve_loop() -> void:
 
 # MVP ally policy: Attack the lowest-HP living enemy. Defend if no enemy remains.
 func _auto_ally_action(actor: Dictionary) -> Dictionary:
-	var enemies := _state.get("combatants", []).filter(
+	var enemies: Array = _state.get("combatants", []).filter(
 		func(c): return str(c.get("side", "")) == "enemy" and int(c.get("HP", 0)) > 0)
 	if enemies.is_empty():
 		return {"actorId": str(actor.get("id", "")), "type": "Defend", "targetIds": []}
