@@ -233,7 +233,7 @@ func _open_reward(room: Dictionary) -> void:
 	rs["runProgress"]["gold"] = int(rs.get("runProgress", {}).get("gold", 0)) + int(reward.get("gold", 0))
 	var inv: Dictionary = rs.get("runProgress", {}).get("inventory", {})
 	for it in reward.get("items", []):
-		var iid: String = str(it.get("id", ""))
+		var iid: String = str(it.get("itemId", ""))
 		var qty: int = int(it.get("qty", 1))
 		inv[iid] = int(inv.get(iid, 0)) + qty
 	rs["runProgress"]["inventory"] = inv
