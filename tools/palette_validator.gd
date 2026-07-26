@@ -18,13 +18,20 @@ var _image_count := 0
 
 
 func _initialize() -> void:
-	var palette := _load_palette()
-	if palette.is_empty():
-		printerr("[palette_validator] WARNING: could not load %s — palette check skipped" % PALETTE_PATH)
+	# Fast-scan: if there are zero PNG/WebP files across all scan roots,
+	# the palette check is vacuously true — skip palette loading entirely,
+	# avoiding any risk of crashes in FileAccess / Color.from_string.
+	if not _has_any_images():
+		print("[palette_validator] PASS: no scannable assets (0 images) — check is moot")
 		quit(0)
 		return
 
-	# Count images first. If there are no images, the check is vacuously true.
+	var palette := _load_palette()
+	if palette.is_empty():
+		printerr("[palette_validator] FAILED: could not load %s" % PALETTE_PATH)
+		quit(1)
+		return
+
 	_image_count = 0
 	var failures := 0
 	for root in SCAN_ROOTS:
@@ -32,17 +39,40 @@ func _initialize() -> void:
 			continue
 		failures += _scan_dir(root, palette)
 
-	if _image_count == 0:
-		print("[palette_validator] PASS: no scannable assets (0 images) — palette check is moot")
-		quit(0)
-		return
-
 	if failures > 0:
 		printerr("[palette_validator] FAIL: %d out-of-set color occurrence(s) across %d image(s)" % [failures, _image_count])
 		quit(1)
 	else:
 		print("[palette_validator] PASS: all %d scanned textures within master palette" % _image_count)
 		quit(0)
+
+
+func _has_any_images() -> bool:
+	for root in SCAN_ROOTS:
+		if not DirAccess.dir_exists_absolute(root):
+			continue
+		if _dir_has_image(root):
+			return true
+	return false
+
+
+func _dir_has_image(dir_path: String) -> bool:
+	var list := DirAccess.open(dir_path)
+	if list == null:
+		return false
+	list.list_dir_begin()
+	var name := list.get_next()
+	while name != "":
+		if list.current_is_dir():
+			if _dir_has_image(dir_path.path_join(name)):
+				list.list_dir_end()
+				return true
+		elif name.get_extension().to_lower() in ["png", "webp"]:
+			list.list_dir_end()
+			return true
+		name = list.get_next()
+	list.list_dir_end()
+	return false
 
 
 func _load_palette() -> Array:
