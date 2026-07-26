@@ -1,8 +1,8 @@
-[gd_scene load_steps=1 format=3]
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/World.gd" id="1"]
 
 [node name="World" type="Node"]
-# Resident root (architecture §2.2). Town/Dungeon are mounted as children by
-# WorldDirector._swap_world_child; the RunState is never reloaded => no save-scum.
-# WorldMount is the documented anchor for the active World child.
+script = ExtResource("1")
 
 [node name="WorldMount" type="Node" parent="."]
