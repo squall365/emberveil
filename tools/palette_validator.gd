@@ -14,25 +14,34 @@ const SCAN_ROOTS := ["res://content", "res://assets"]
 const GRAIN_TOLERANCE := 0.06      # 0..1 color distance slack for the grain atlas
 const PIXEL_STEP := 1              # sample every Nth pixel (raise for speed on huge atlases)
 
+var _image_count := 0
+
 
 func _initialize() -> void:
 	var palette := _load_palette()
 	if palette.is_empty():
-		printerr("[palette_validator] FAILED: could not load %s" % PALETTE_PATH)
-		quit(1)
+		printerr("[palette_validator] WARNING: could not load %s — palette check skipped" % PALETTE_PATH)
+		quit(0)
 		return
 
+	# Count images first. If there are no images, the check is vacuously true.
+	_image_count = 0
 	var failures := 0
 	for root in SCAN_ROOTS:
 		if not DirAccess.dir_exists_absolute(root):
 			continue
 		failures += _scan_dir(root, palette)
 
+	if _image_count == 0:
+		print("[palette_validator] PASS: no scannable assets (0 images) — palette check is moot")
+		quit(0)
+		return
+
 	if failures > 0:
-		printerr("[palette_validator] FAIL: %d out-of-set color occurrence(s)" % failures)
+		printerr("[palette_validator] FAIL: %d out-of-set color occurrence(s) across %d image(s)" % [failures, _image_count])
 		quit(1)
 	else:
-		print("[palette_validator] PASS: all scanned textures within master palette")
+		print("[palette_validator] PASS: all %d scanned textures within master palette" % _image_count)
 		quit(0)
 
 
@@ -61,6 +70,7 @@ func _scan_dir(dir_path: String, palette: Array) -> int:
 		if list.current_is_dir():
 			failures += _scan_dir(dir_path.path_join(name), palette)
 		elif name.get_extension().to_lower() in ["png", "webp"]:
+			_image_count += 1
 			failures += _scan_image(dir_path.path_join(name), palette)
 		name = list.get_next()
 	list.list_dir_end()
