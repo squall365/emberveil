@@ -1,63 +1,141 @@
 extends Node
-class_name CombatController
-# E9.4 — drives a real, deterministic battle loop for one encounter. Instantiated PER battle
-# by the Dungeon scene (Battle.tscn root), never as an autoload. Receives a fully-built
-# BattleState + an injected RNGService + a result callback (the Dungeon). Resolves actions
-# through BattleResolver (pure) and EnemyAI; emits battle_event on EventBus for UI only.
-#
-# NEVER writes saves (anti-save-scum): the callback (Dungeon) owns persistence at safe nodes.
-# The Battle node is added as an overlay (get_tree().get_root().add_child) by the Dungeon and
-# is queue_freed here when the battle ends — never serialized (architecture §2.2).
+# Sprint 3 — player-driven battle loop. One encounter; added as root overlay by the
+# Dungeon, queue_freed on resolution. MVP: "Attack" button resolves all allies, then
+# enemies auto-respond. Repeat until one side wipes. No save mid-battle (anti-scum).
 
 var _state: Dictionary = {}
 var _rng: RNGService = null
 var _callback: Object = null
-var _fsm: BattleFSM = null
-var _queue: BattleQueue = null
 var _is_boss: bool = false
 var _outcome: String = "ongoing"
+var _gui: Control = null
 
 func setup(state: Dictionary, rng: RNGService, callback: Object) -> void:
-	_state = state.duplicate(true) if state != null else {}
+	_state = state.duplicate(true)
 	_rng = rng
 	_callback = callback
 	_is_boss = bool(_state.get("isBoss", false))
-	_fsm = BattleFSM.new()
-	_fsm.transition(BattleFSM.Phase.PlayerInput)
-	_queue = BattleQueue.new()
-	_queue.setup(_state.get("combatants", []))
-	_resolve_loop()
+	_build_gui()
+	_refresh_display()
 
-# Synchronous, deterministic resolution. Allies auto-Attack the lowest-HP enemy (UI hook point
-# for E3-F/G commands); enemies use EnemyAI. Loop is guarded against non-termination.
-func _resolve_loop() -> void:
-	var guard := 0
-	while guard < 4000:
-		guard += 1
-		var aid := _queue.next_actor()
-		if aid == "":
-			_queue.new_round()
-			aid = _queue.next_actor()
-			if aid == "":
-				break
-		var actor := _find(aid)
-		if actor.is_empty():
-			_queue.mark_acted(aid)
+func _build_gui() -> void:
+	_gui = Control.new()
+	_gui.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	add_child(_gui)
+
+	var bg := ColorRect.new()
+	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	bg.color = Color(0.169, 0.106, 0.180, 0.92)
+	_gui.add_child(bg)
+
+	var label := Label.new()
+	label.position = Vector2(10, 10)
+	label.size = Vector2(600, 24)
+	label.add_theme_font_size_override("font_size", 16)
+	label.add_theme_color_override("font_color", Color(0.949, 0.851, 0.627, 1.0))
+	label.text = "Battle: %s" % ("Boss fight!" if _is_boss else "Enemy encounter")
+	_gui.add_child(label)
+
+	var btn := Button.new()
+	btn.text = "Attack"
+	btn.position = Vector2(10, 400)
+	btn.size = Vector2(140, 44)
+	btn.pressed.connect(_on_attack_pressed)
+	_gui.add_child(btn)
+
+	var defend_btn := Button.new()
+	defend_btn.text = "Defend"
+	defend_btn.position = Vector2(160, 400)
+	defend_btn.size = Vector2(140, 44)
+	_gui.add_child(defend_btn)
+	# Defend placeholder for Sprint 3; wired later.
+
+	# Message label at bottom
+	var msg := Label.new()
+	msg.name = "Message"
+	msg.position = Vector2(10, 460)
+	msg.size = Vector2(600, 24)
+	msg.add_theme_color_override("font_color", Color(0.851, 0.851, 0.851, 1.0))
+	msg.text = "Tap Attack to begin."
+	_gui.add_child(msg)
+
+func _refresh_display() -> void:
+	for c in _gui.get_children():
+		if c.has_meta("hp_bar"):
+			c.queue_free()
+
+	var allies: Array = _combatants_by_side("ally")
+	var enemies: Array = _combatants_by_side("enemy")
+
+	for i in allies.size():
+		_draw_hp_bar(allies[i], Vector2(10, 50 + i * 36), Color(0.467, 0.765, 0.478, 1.0))
+	for i in enemies.size():
+		_draw_hp_bar(enemies[i], Vector2(420, 50 + i * 36), Color(0.784, 0.275, 0.275, 1.0))
+
+func _draw_hp_bar(c: Dictionary, pos: Vector2, color: Color) -> void:
+	var max_hp: int = int(c.get("maxHP", 1))
+	var hp: int = int(c.get("HP", 0))
+	var ratio: float = clamp(float(hp) / float(max_hp), 0.0, 1.0)
+	var name: String = str(c.get("name", c.get("id", "?")))
+
+	var label := Label.new()
+	label.position = pos
+	label.size = Vector2(180, 16)
+	label.text = "%s  %d / %d" % [name, hp, max_hp]
+	label.add_theme_font_size_override("font_size", 13)
+	label.add_theme_color_override("font_color", Color(0.949, 0.851, 0.627, 1.0))
+	label.set_meta("hp_bar", true)
+	_gui.add_child(label)
+
+	var bar_bg := ColorRect.new()
+	bar_bg.position = Vector2(pos.x, pos.y + 17)
+	bar_bg.size = Vector2(180, 12)
+	bar_bg.color = Color(0.2, 0.2, 0.2, 1.0)
+	bar_bg.set_meta("hp_bar", true)
+	_gui.add_child(bar_bg)
+
+	var bar := ColorRect.new()
+	bar.position = Vector2(pos.x + 1, pos.y + 18)
+	bar.size = Vector2(178.0 * ratio, 10)
+	bar.color = color
+	bar.set_meta("hp_bar", true)
+	_gui.add_child(bar)
+
+
+func _on_attack_pressed() -> void:
+	_resolve_all_allies()
+	if _outcome != "ongoing":
+		return
+	_resolve_all_enemies()
+	if _outcome != "ongoing":
+		return
+	_refresh_display()
+	_get_msg_label().text = "Tap Attack to continue."
+
+
+func _resolve_all_allies() -> void:
+	for c in _combatants_by_side("ally"):
+		if int(c.get("HP", 0)) <= 0:
 			continue
-		var action: Dictionary
-		if str(actor.get("side", "")) == "ally":
-			action = _auto_ally_action(actor)
-		else:
-			action = EnemyAI.new().choose_action(_state, actor, _rng)
-		var res := BattleResolver.resolve_action(_state, action, _rng)
+		var action := _auto_ally_action(c)
+		var res: Array = BattleResolver.resolve_action(_state, action, _rng)
 		_state = res[0]
-		EventBus.battle_event.emit({"actorId": aid, "action": action, "events": res[1]})
-		_queue.mark_acted(aid)
 		if _check_end():
-			break
-	_finish()
+			return
 
-# MVP ally policy: Attack the lowest-HP living enemy. Defend if no enemy remains.
+
+func _resolve_all_enemies() -> void:
+	for c in _combatants_by_side("enemy"):
+		if int(c.get("HP", 0)) <= 0:
+			continue
+		var ai := EnemyAI.new()
+		var action := ai.choose_action(_state, c, _rng)
+		var res: Array = BattleResolver.resolve_action(_state, action, _rng)
+		_state = res[0]
+		if _check_end():
+			return
+
+
 func _auto_ally_action(actor: Dictionary) -> Dictionary:
 	var enemies: Array = _state.get("combatants", []).filter(
 		func(c): return str(c.get("side", "")) == "enemy" and int(c.get("HP", 0)) > 0)
@@ -69,6 +147,7 @@ func _auto_ally_action(actor: Dictionary) -> Dictionary:
 			tgt = e
 	return {"actorId": str(actor.get("id", "")), "type": "Attack", "targetIds": [str(tgt.get("id", ""))]}
 
+
 func _check_end() -> bool:
 	var any_enemy := false
 	var any_ally := false
@@ -76,26 +155,34 @@ func _check_end() -> bool:
 		if int(c.get("HP", 0)) > 0:
 			if str(c.get("side", "")) == "enemy":
 				any_enemy = true
-			else:
+			elif str(c.get("side", "")) == "ally":
 				any_ally = true
 	if not any_enemy:
 		_outcome = "win"
-		_fsm.transition(BattleFSM.Phase.Victory)
+		_get_msg_label().text = "Victory!"
+		call_deferred("_finish")
 		return true
 	if not any_ally:
 		_outcome = "lose"
-		_fsm.transition(BattleFSM.Phase.Defeat)
+		_get_msg_label().text = "Defeat..."
+		call_deferred("_finish")
 		return true
 	return false
 
-func _find(id: String) -> Dictionary:
+
+func _combatants_by_side(side: String) -> Array:
+	var out: Array = []
 	for c in _state.get("combatants", []):
-		if str(c.get("id", "")) == id:
-			return c
-	return {}
+		if str(c.get("side", "")) == side and int(c.get("HP", 0)) > 0:
+			out.append(c)
+	return out
+
+
+func _get_msg_label() -> Label:
+	return _gui.get_node("Message") as Label
+
 
 func _finish() -> void:
-	# Pass the final state so the Dungeon can write ally hp/mp/level/xp back.
 	var result := {"outcome": _outcome, "state": _state}
 	if _callback != null and _callback.has_method("_on_battle_resolved"):
 		_callback._on_battle_resolved(result)

@@ -94,20 +94,14 @@ func _enter_current_room() -> void:
 		return  # already done this session; door open, no re-trigger
 	match str(room.get("type", "")):
 		"combat":
-			# Sprint 2 demo: auto-clear combat (real battle deferred to Sprint 3).
-			_mark_room_cleared(_current_room_id)
+			_start_battle(str(room.get("encounterId", "")), false)
 		"boss":
-			# Sprint 2 demo: auto-clear boss, drop Stone Sigil.
-			_mark_room_cleared(_current_room_id)
-			WardCodex.attune("stone")
+			if not _session_cleared.has(_current_room_id):
+				_start_battle(str(room.get("encounterId", "")), true)
 		"puzzle":
 			_enter_puzzle(room)
 		"reward":
 			_open_reward(room)
-	# After any room is cleared, check if the whole floor is done.
-	if _floor_fully_cleared():
-		WorldDirector.clear_floor(_floor_idx)
-		_advance_floor_or_return()
 
 # ---- battle launch (E9.4) ----
 func _start_battle(encounter_id: String, is_boss: bool) -> void:
@@ -217,9 +211,7 @@ func _on_battle_resolved(result: Dictionary) -> void:
 		rs2["worldState"]["dungeon"]["bossDefeated"] = true
 		SceneManager.commit_run_state(rs2)
 		SaveManager.save(SceneManager.get_run_state(), true)   # sigil-attune safe node
-	if _floor_fully_cleared():
-		WorldDirector.clear_floor(_floor_idx)   # safe node save + clearedFloors
-		_advance_floor_or_return()
+	# Floor-clear check is now in _mark_room_cleared (called above).
 
 func _floor_fully_cleared() -> bool:
 	for r in _rooms:
@@ -299,6 +291,9 @@ func _mark_room_cleared(room_id: String) -> void:
 		_session_cleared.append(room_id)
 	_room_cursor = _frontier()
 	_refresh_ui()
+	if _floor_fully_cleared():
+		WorldDirector.clear_floor(_floor_idx)
+		_advance_floor_or_return()
 
 # ---- wipe -> last safe save (E9.5, decision 2.6) ----
 func _reload_last_safe_save() -> void:
