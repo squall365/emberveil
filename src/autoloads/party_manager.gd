@@ -1,5 +1,5 @@
 extends Node
-class_name PartyManager
+# class_name PartyManager
 # 4 slots, max 1 per job. Derived stats recomputed on demand and NEVER persisted
 # (save test asserts maxHP/ATK absent from the blob). Sprint 2 (E9.4/GAP-9): assemble
 # battle combatants and write battle outcomes back into the run-state party.

@@ -1,5 +1,5 @@
 extends Node
-class_name SceneManager
+# class_name SceneManager
 # Scene routing + safe-node save orchestration (E2-G / E4-D / E6-A).
 # Sprint 1: tracked the LOGICAL current node and drove safe-node saves. Sprint 2
 # (E9.1/GAP-3) adds read-only accessors + a single commit writer so World children
