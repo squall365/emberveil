@@ -58,14 +58,14 @@ func _build_gui() -> void:
 	skill_btn.text = "Skill"
 	skill_btn.position = Vector2(vs.x - 320, vs.y - 110)
 	skill_btn.size = Vector2(140, 44)
-	skill_btn.disabled = true
+	skill_btn.pressed.connect(_on_skill_pressed)
 	_gui.add_child(skill_btn)
 
 	var item_btn := Button.new()
 	item_btn.text = "Item"
 	item_btn.position = Vector2(vs.x - 170, vs.y - 110)
 	item_btn.size = Vector2(140, 44)
-	item_btn.disabled = true
+	item_btn.pressed.connect(_on_item_pressed)
 	_gui.add_child(item_btn)
 
 	# Message label at bottom
@@ -146,6 +146,63 @@ func _on_defend_pressed() -> void:
 	_clear_all_guard()
 	_refresh_display()
 	_get_msg_label().text = "Defended! Your turn."
+
+
+func _on_skill_pressed() -> void:
+	for c in _combatants_by_side("ally"):
+		if int(c.get("MP", 0)) < 4:
+			continue
+		var tgt := _pick_weakest_enemy()
+		var action := {"actorId": str(c.get("id", "")), "type": "Skill", "targetIds": [str(tgt.get("id", ""))]}
+		var res: Array = BattleResolver.resolve_action(_state, action, _rng)
+		_state = res[0]
+	if _outcome != "ongoing":
+		return
+	_resolve_all_enemies()
+	if _outcome != "ongoing":
+		return
+	_clear_all_guard()
+	_refresh_display()
+	_get_msg_label().text = "Skills used! Your turn."
+
+
+func _on_item_pressed() -> void:
+	var weakest := _pick_weakest_ally()
+	if weakest.is_empty():
+		return
+	var action := {"actorId": str(weakest.get("id", "")), "type": "Item", "targetIds": [str(weakest.get("id", ""))]}
+	var res: Array = BattleResolver.resolve_action(_state, action, _rng)
+	_state = res[0]
+	if _outcome != "ongoing":
+		return
+	_resolve_all_enemies()
+	if _outcome != "ongoing":
+		return
+	_clear_all_guard()
+	_refresh_display()
+	_get_msg_label().text = "Herb used! Your turn."
+
+
+func _pick_weakest_enemy() -> Dictionary:
+	var enemies: Array = _combatants_by_side("enemy")
+	if enemies.is_empty():
+		return {}
+	var tgt: Dictionary = enemies[0]
+	for e in enemies:
+		if int(e.get("HP", 0)) < int(tgt.get("HP", 0)):
+			tgt = e
+	return tgt
+
+
+func _pick_weakest_ally() -> Dictionary:
+	var allies: Array = _combatants_by_side("ally")
+	if allies.is_empty():
+		return {}
+	var tgt: Dictionary = allies[0]
+	for a in allies:
+		if int(a.get("HP", 0)) < int(tgt.get("HP", 0)):
+			tgt = a
+	return tgt
 
 
 func _resolve_all_allies() -> void:
