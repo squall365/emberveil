@@ -38,6 +38,7 @@ static func elemental_damage(caster: Dictionary, defender: Dictionary, spell: Di
 # Resolve a single action against a battle state. Returns [new_state, events].
 # new_state is a deep copy; the input state is never mutated (pure).
 static func resolve_action(state: Dictionary, action: Dictionary, rng: RNGService) -> Array:
+	push_error("[Resolver] resolve_action called, type=", action.get("type", "?"), " actor=", action.get("actorId", "?"))
 	var new_state: Dictionary = state.duplicate(true)
 	var log_entries: Array = new_state.get("log", [])
 	if typeof(log_entries) != TYPE_ARRAY:
