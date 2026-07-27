@@ -22,11 +22,15 @@ var _focus: int = 0
 func _ready() -> void:
 	_connect_buttons()
 	_refresh_ui()
+	_add_town_background()
+	_add_party_display()
 
 func setup(_params: Dictionary = {}) -> void:
 	_focus = 0
 	_connect_buttons()
 	_refresh_ui()
+	_add_town_background()
+	_add_party_display()
 
 func _connect_buttons() -> void:
 	for nd in NODES:
@@ -100,7 +104,53 @@ func _map_cancel() -> void:
 	EventBus.scene_changed.emit("Town", {"pause": true})
 
 # --- UI (MVP: 5 node buttons; focus ring = parchment glow; locked = greyed) ---
-func _refresh_ui() -> void:
+func _add_town_background() -> void:
+	var existing := get_node_or_null("TownBackground")
+	if existing != null:
+		existing.queue_free()
+	if not FileAccess.file_exists("assets/backgrounds/town_bg.png"):
+		return
+	var tex := load("res://assets/backgrounds/town_bg.png")
+	if tex == null:
+		return
+	var bg := TextureRect.new()
+	bg.name = "TownBackground"
+	bg.texture = tex
+	bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	var vs := get_viewport().get_visible_rect().size
+	bg.position = Vector2.ZERO
+	bg.size = vs
+	bg.modulate = Color(1, 1, 1, 0.5)
+	get_parent().add_child(bg)
+	get_parent().move_child(bg, 0)  # behind town UI
+
+func _add_party_display() -> void:
+	var old := get_node_or_null("PartyInfo")
+	if old != null:
+		old.queue_free()
+	var vs := get_viewport().get_visible_rect().size
+	var container := VBoxContainer.new()
+	container.name = "PartyInfo"
+	container.position = Vector2(20, vs.y - 120)
+	add_child(container)
+
+	var party: Array = SceneManager.get_run_state().get("party", [])
+	if party.is_empty():
+		return
+	for m in party:
+		var s: Dictionary = PartyManager.derive_stats(m)
+		var hp: int = int(m.get("hp", -1))
+		var mp: int = int(m.get("mp", -1))
+		if hp < 0: hp = s.get("maxHP", 100)
+		if mp < 0: mp = s.get("maxMP", 10)
+		var label := Label.new()
+		label.text = "%s  LV%d  HP:%d/%d  MP:%d/%d" % [
+			str(m.get("jobId", "?")).capitalize(),
+			s.get("level", 1), hp, s.get("maxHP", 100), mp, s.get("maxMP", 10)
+		]
+		label.add_theme_font_size_override("font_size", 12)
+		label.add_theme_color_override("font_color", Color(0.949, 0.851, 0.627, 1.0))
+		container.add_child(label)
 	for i in NODES.size():
 		var btn = get_node_or_null("Nodes/" + NODES[i]["id"])
 		if btn == null:
