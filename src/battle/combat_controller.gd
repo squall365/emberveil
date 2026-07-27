@@ -11,11 +11,11 @@ var _outcome: String = "ongoing"
 var _gui: Control = null
 
 func setup(state: Dictionary, rng: RNGService, callback: Object) -> void:
-	print("[CombatController] setup called, building GUI deferred")
 	_state = state.duplicate(true)
 	_rng = rng
 	_callback = callback
 	_is_boss = bool(_state.get("isBoss", false))
+	print("[CombatController] setup isBoss=", _is_boss, " enemies=", _combatants_by_side("enemy").size())
 	# Defer GUI build so get_viewport() has valid rect (not 0x0 during setup).
 	call_deferred("_build_gui")
 
