@@ -94,6 +94,7 @@ static func resolve_action(state: Dictionary, action: Dictionary, rng: RNGServic
 			"Defend":
 				# No damage. Guard halves the NEXT incoming hit on this actor.
 				actor["guard"] = true
+				print("[Resolver] guard SET on ", str(actor_id))
 				events.append({"actor": actor_id, "target": str(tid), "type": atype, "dmg": 0})
 				log_entries.append("%s guards" % actor_id)
 				continue
@@ -116,6 +117,7 @@ static func resolve_action(state: Dictionary, action: Dictionary, rng: RNGServic
 				continue
 		# Affinity-guarded damage reduction (Defend from a previous turn).
 		if target.has("guard"):
+			print("[Resolver] guard ACTIVE for ", str(tid), " origDmg=", dmg, " halved=", int(float(dmg) * GUARD_MULT))
 			dmg = int(float(dmg) * GUARD_MULT)
 			# Guard persists for all hits this round; cleared by caller.
 		target["HP"] = max(0, int(target.get("HP", 0)) - dmg)
