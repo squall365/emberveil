@@ -11,6 +11,7 @@ var _outcome: String = "ongoing"
 var _gui: Control = null
 
 func setup(state: Dictionary, rng: RNGService, callback: Object) -> void:
+	print("[CombatController] setup called, building GUI deferred")
 	_state = state.duplicate(true)
 	_rng = rng
 	_callback = callback
@@ -19,7 +20,9 @@ func setup(state: Dictionary, rng: RNGService, callback: Object) -> void:
 	call_deferred("_build_gui")
 
 func _build_gui() -> void:
+	print("[CombatController] _build_gui starting")
 	var vs := get_viewport().get_visible_rect().size
+	print("[CombatController] viewport size: ", vs)
 	_gui = Control.new()
 	_gui.position = Vector2.ZERO
 	_gui.size = vs
