@@ -100,9 +100,19 @@ func _draw_hp_bar(c: Dictionary, pos: Vector2, color: Color) -> void:
 	var mp: int = int(c.get("MP", 0))
 	var max_mp: int = int(c.get("maxMP", 1))
 
+	# Element icon (colored square)
+	var aff: String = str(c.get("affinity", "none"))
+	var aff_color := {"ember": Color(0.91,0.455,0.231), "frost": Color(0.435,0.718,0.91), "stone": Color(0.588,0.392,0.2), "storm": Color(0.85,0.85,0.2), "gale": Color(0.2,0.7,0.6), "lumen": Color(0.95,0.95,0.7), "umbra": Color(0.35,0.2,0.5)}.get(aff, Color(0.5,0.5,0.5))
+	var icon := ColorRect.new()
+	icon.position = pos
+	icon.size = Vector2(12, 12)
+	icon.color = aff_color
+	icon.set_meta("hp_bar", true)
+	_gui.add_child(icon)
+
 	var label := Label.new()
-	label.position = pos
-	label.size = Vector2(180, 14)
+	label.position = Vector2(pos.x + 16, pos.y)
+	label.size = Vector2(164, 14)
 	label.text = "%s%s  %d/%d  MP:%d" % [name, guard_tag, hp, max_hp, mp]
 	label.add_theme_font_size_override("font_size", 11)
 	label.add_theme_color_override("font_color", Color(0.949, 0.851, 0.627, 1.0))
