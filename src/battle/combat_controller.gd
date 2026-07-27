@@ -123,6 +123,7 @@ func _draw_hp_bar(c: Dictionary, pos: Vector2, color: Color) -> void:
 
 
 func _on_attack_pressed() -> void:
+	print("[Combat] Attack pressed")
 	_resolve_all_allies()
 	if _outcome != "ongoing":
 		return
@@ -135,6 +136,7 @@ func _on_attack_pressed() -> void:
 
 
 func _on_defend_pressed() -> void:
+	print("[Combat] Defend pressed, allies=", _combatants_by_side("ally").size())
 	for c in _combatants_by_side("ally"):
 		var action := {"actorId": str(c.get("id", "")), "type": "Defend", "targetIds": []}
 		var res: Array = BattleResolver.resolve_action(_state, action, _rng)
