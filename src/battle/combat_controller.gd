@@ -185,6 +185,7 @@ func _on_attack_pressed() -> void:
 		return
 	_clear_all_guard()
 	_refresh_display()
+	_flash_hit()
 	_get_msg_label().text = "Tap Attack to continue."
 
 
@@ -199,6 +200,7 @@ func _on_defend_pressed() -> void:
 		return
 	_clear_all_guard()
 	_refresh_display()
+	_flash_hit()
 	_get_msg_label().text = "Defended! Your turn."
 
 
@@ -217,6 +219,7 @@ func _on_skill_pressed() -> void:
 		return
 	_clear_all_guard()
 	_refresh_display()
+	_flash_hit()
 	_get_msg_label().text = "Skills used! Your turn."
 
 
@@ -234,6 +237,7 @@ func _on_item_pressed() -> void:
 		return
 	_clear_all_guard()
 	_refresh_display()
+	_flash_hit()
 	_get_msg_label().text = "Herb used! Your turn."
 
 
@@ -332,6 +336,16 @@ func _clear_all_guard() -> void:
 	for c in _state.get("combatants", []):
 		if c.has("guard"):
 			c.erase("guard")
+
+
+func _flash_hit() -> void:
+	for c in _gui.get_children():
+		if c.has_meta("battle_sprite"):
+			var rect := c as TextureRect
+			if rect == null:
+				continue
+			rect.modulate = Color.RED
+			get_tree().create_timer(0.15).timeout.connect(func(): rect.modulate = Color.WHITE)
 
 
 func _get_msg_label() -> Label:
