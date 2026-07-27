@@ -80,16 +80,40 @@ func _build_gui() -> void:
 
 func _refresh_display() -> void:
 	for c in _gui.get_children():
-		if c.has_meta("hp_bar"):
+		if c.has_meta("hp_bar") or c.has_meta("battle_sprite"):
 			c.queue_free()
 
 	var allies: Array = _combatants_by_side("ally")
 	var enemies: Array = _combatants_by_side("enemy")
 
 	for i in allies.size():
-		_draw_hp_bar(allies[i], Vector2(10, 50 + i * 36), Color(0.467, 0.765, 0.478, 1.0))
+		var c: Dictionary = allies[i]
+		_draw_sprite(c, Vector2(20, 70 + i * 72))
+		_draw_hp_bar(c, Vector2(80, 70 + i * 72), Color(0.467, 0.765, 0.478, 1.0))
 	for i in enemies.size():
-		_draw_hp_bar(enemies[i], Vector2(420, 50 + i * 36), Color(0.784, 0.275, 0.275, 1.0))
+		var c: Dictionary = enemies[i]
+		_draw_sprite(c, Vector2(480, 70 + i * 72))
+		_draw_hp_bar(c, Vector2(540, 70 + i * 72), Color(0.784, 0.275, 0.275, 1.0))
+
+func _draw_sprite(c: Dictionary, pos: Vector2) -> void:
+	var sprite_path := ""
+	var sid: String = str(c.get("id", ""))
+	if str(c.get("side", "")) == "ally":
+		sprite_path = "res://assets/sprites/jobs/" + str(c.get("jobId", "vanguard")) + ".png"
+	else:
+		sprite_path = "res://assets/sprites/enemies/" + sid + ".png"
+	if not FileAccess.file_exists(sprite_path.replace("res://", "")):
+		return
+	var tex := load(sprite_path)
+	if tex == null:
+		return
+	var rect := TextureRect.new()
+	rect.texture = tex
+	rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	rect.position = pos
+	rect.size = Vector2(56, 56)
+	rect.set_meta("battle_sprite", true)
+	_gui.add_child(rect)
 
 func _draw_hp_bar(c: Dictionary, pos: Vector2, color: Color) -> void:
 	var max_hp: int = int(c.get("maxHP", 1))
