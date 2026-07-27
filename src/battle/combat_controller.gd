@@ -24,18 +24,20 @@ func _show_damage_numbers() -> void:
 		var before: int = int(_prev_hp.get(cid, int(c.get("HP", 0))))
 		var after: int = int(c.get("HP", 0))
 		var diff := before - after
-		if diff <= 0:
+		if diff == 0:
 			continue
+		var is_heal := diff < 0
+		var val := -diff if is_heal else diff
 		var vs := get_viewport().get_visible_rect().size
 		var side := str(c.get("side", ""))
 		var x: float = 100.0 if side == "ally" else 540.0
 		var y: float = 100.0 + _combatant_index(cid) * 72.0
 		var label := Label.new()
-		label.text = "-%d" % diff
+		label.text = "+%d" % val if is_heal else "-%d" % val
 		label.position = Vector2(x, y)
 		label.size = Vector2(80, 20)
 		label.add_theme_font_size_override("font_size", 16)
-		label.add_theme_color_override("font_color", Color(0.91, 0.455, 0.231, 1.0))
+		label.add_theme_color_override("font_color", Color(0.467, 0.765, 0.478, 1.0) if is_heal else Color(0.91, 0.455, 0.231, 1.0))
 		label.set_meta("damage_text", true)
 		_gui.add_child(label)
 		var tween := create_tween()
@@ -45,6 +47,10 @@ func _show_damage_numbers() -> void:
 			if is_instance_valid(label): 
 				label.queue_free()
 		)
+	# Fade out dead combatants
+	for c in _state.get("combatants", []):
+		if int(c.get("HP", 0)) <= 0:
+			_draw_dead_sprite(c)
 
 
 func _combatant_index(cid: String) -> int:
@@ -52,6 +58,14 @@ func _combatant_index(cid: String) -> int:
 		if str(_state["combatants"][i].get("id", "")) == cid:
 			return i
 	return 0
+
+
+func _draw_dead_sprite(c: Dictionary) -> void:
+	for ch in _gui.get_children():
+		if ch.has_meta("battle_sprite") and ch.has_meta("cid") and str(ch.get_meta("cid")) == str(c.get("id", "")):
+			var tween := create_tween()
+			tween.tween_property(ch, "modulate", Color(1, 1, 1, 0.2), 0.3)
+			return
 
 
 func _show_victory_text() -> void:
@@ -173,6 +187,7 @@ func _draw_sprite(c: Dictionary, pos: Vector2) -> void:
 	rect.position = pos
 	rect.size = Vector2(56, 56)
 	rect.set_meta("battle_sprite", true)
+	rect.set_meta("cid", sid)
 	_gui.add_child(rect)
 
 func _draw_hp_bar(c: Dictionary, pos: Vector2, color: Color) -> void:
@@ -248,7 +263,8 @@ func _on_attack_pressed() -> void:
 	_refresh_display()
 	_flash_hit()
 	_show_damage_numbers()
-	_get_msg_label().text = "Tap Attack to continue."
+	var dmg := _calc_round_damage()
+	_get_msg_label().text = "Dealt %d dmg. Received %d." % [dmg[0], dmg[1]]
 
 
 func _on_defend_pressed() -> void:
@@ -397,7 +413,18 @@ func _combatants_by_side(side: String) -> Array:
 	return out
 
 
-func _clear_all_guard() -> void:
+func _calc_round_damage() -> Array:
+	var dealt := 0
+	var received := 0
+	for c in _state.get("combatants", []):
+		var cid := str(c.get("id", ""))
+		var before: int = int(_prev_hp.get(cid, int(c.get("HP", 0))))
+		var after: int = int(c.get("HP", 0))
+		if str(c.get("side", "")) == "enemy" and before > after:
+			dealt += before - after
+		elif str(c.get("side", "")) == "ally" and before > after:
+			received += before - after
+	return [dealt, received]
 	for c in _state.get("combatants", []):
 		if c.has("guard"):
 			c.erase("guard")
