@@ -15,14 +15,11 @@ func setup(state: Dictionary, rng: RNGService, callback: Object) -> void:
 	_rng = rng
 	_callback = callback
 	_is_boss = bool(_state.get("isBoss", false))
-	print("[CombatController] setup isBoss=", _is_boss, " enemies=", _combatants_by_side("enemy").size())
 	# Defer GUI build so get_viewport() has valid rect (not 0x0 during setup).
 	call_deferred("_build_gui")
 
 func _build_gui() -> void:
-	print("[CombatController] _build_gui starting")
 	var vs := get_viewport().get_visible_rect().size
-	print("[CombatController] viewport size: ", vs)
 	_gui = Control.new()
 	_gui.position = Vector2.ZERO
 	_gui.size = vs
