@@ -340,12 +340,18 @@ func _clear_all_guard() -> void:
 
 func _flash_hit() -> void:
 	for c in _gui.get_children():
-		if c.has_meta("battle_sprite"):
-			var rect := c as TextureRect
-			if rect == null:
-				continue
-			rect.modulate = Color.RED
-			get_tree().create_timer(0.15).timeout.connect(func(): rect.modulate = Color.WHITE)
+		if not c.has_meta("battle_sprite"):
+			continue
+		if not is_instance_valid(c):
+			continue
+		var rect: TextureRect = c as TextureRect
+		if rect == null:
+			continue
+		rect.modulate = Color.RED
+		get_tree().create_timer(0.15).timeout.connect(func(): 
+			if is_instance_valid(rect):
+				rect.modulate = Color.WHITE
+		)
 
 
 func _get_msg_label() -> Label:
