@@ -244,23 +244,69 @@ func _open_reward(room: Dictionary) -> void:
 	SceneManager.commit_run_state(rs)
 	_mark_room_cleared(str(room.get("id", "")))
 
-# ---- puzzle (Sprint 2: auto-cleared on entry; Sprint 3 will have stone-tapping UI) ----
+# ---- puzzle (Sprint 3: stone-tapping UI) ----
+const STONE_COLORS := {"ember": Color(0.91, 0.455, 0.231), "frost": Color(0.435, 0.718, 0.91), "storm": Color(0.788, 0.541, 0.231)}
+
 func _enter_puzzle(room: Dictionary) -> void:
 	if _session_cleared.has(str(room.get("id", ""))):
 		return
-	# Auto-clear puzzle for Sprint 2 demo (no stone-tapping UI yet).
-	_mark_room_cleared(str(room.get("id", "")))
-	_in_puzzle = false
-	_puzzle_solved = true
-	# After auto-solving puzzle, advance to next room if it's the cursor.
-	var rc: int = _room_cursor + 1
-	if rc < _rooms.size():
-		_room_cursor = rc
-	_refresh_ui()
+	_in_puzzle = true
+	_puzzle_order = room.get("puzzleOrder", [])
+	_puzzle_progress = 0
+	_puzzle_solved = false
+	_stone_focus = 0
+	_build_puzzle_gui()
 
-func _on_stone_tapped(element: String) -> void:
-	if not _in_puzzle or _puzzle_solved:
-		return
+func _build_puzzle_gui() -> void:
+	var vs := get_viewport().get_visible_rect().size
+	var gui := Control.new()
+	gui.name = "PuzzleOverlay"
+	gui.position = Vector2.ZERO
+	gui.size = vs
+	add_child(gui)
+
+	var bg := ColorRect.new()
+	bg.position = Vector2.ZERO
+	bg.size = vs
+	bg.color = Color(0.169, 0.106, 0.180, 0.85)
+	gui.add_child(bg)
+
+	var title := Label.new()
+	title.text = "Ward Stone Puzzle"
+	title.position = Vector2(20, 60)
+	title.size = Vector2(vs.x - 40, 30)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 20)
+	title.add_theme_color_override("font_color", Color(0.949, 0.851, 0.627, 1.0))
+	gui.add_child(title)
+
+	# Stones — positioned side by side
+	var stone_names := _puzzle_order
+	var total_w := stone_names.size() * 120
+	var start_x := (vs.x - total_w) / 2.0
+	for i in stone_names.size():
+		var btn := Button.new()
+		btn.text = stone_names[i].capitalize()
+		btn.position = Vector2(start_x + i * 120, vs.y * 0.4)
+		btn.size = Vector2(100, 100)
+		btn.pressed.connect(_on_stone_button_pressed.bind(i, stone_names[i]))
+		var col: Color = STONE_COLORS.get(stone_names[i], Color.WHITE)
+		btn.add_theme_color_override("font_color", col)
+		btn.add_theme_font_size_override("font_size", 16)
+		gui.add_child(btn)
+
+	# Hint
+	var hint := Label.new()
+	hint.name = "PuzzleHint"
+	hint.text = "Tap: %s" % _puzzle_order[0].capitalize()
+	hint.position = Vector2(20, vs.y * 0.55)
+	hint.size = Vector2(vs.x - 40, 28)
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hint.add_theme_color_override("font_color", Color(0.851, 0.851, 0.851, 1.0))
+	gui.add_child(hint)
+
+
+func _on_stone_button_pressed(idx: int, element: String) -> void:
 	if _puzzle_progress >= _puzzle_order.size():
 		return
 	if element == str(_puzzle_order[_puzzle_progress]):
@@ -268,14 +314,23 @@ func _on_stone_tapped(element: String) -> void:
 		if _puzzle_progress >= _puzzle_order.size():
 			_puzzle_solved = true
 			_in_puzzle = false
+			_remove_puzzle_gui()
 			_mark_room_cleared(_current_room_id)
 		else:
-			# Move the focus ring to the next expected stone so the hint + ring stay aligned.
-			_stone_focus = mini(_puzzle_progress, _puzzle_order.size() - 1)
-			_refresh_ui()
+			var hint := get_node_or_null("PuzzleOverlay/PuzzleHint")
+			if hint != null:
+				hint.text = "Tap: %s" % str(_puzzle_order[_puzzle_progress]).capitalize()
 	else:
-		_reset_puzzle()   # decision 2.4: full group reset, no soft-lock
-		EventBus.progression_event.emit({"puzzle": "disrupted"})
+		_puzzle_progress = 0
+		var hint := get_node_or_null("PuzzleOverlay/PuzzleHint")
+		if hint != null:
+			hint.text = "Wrong! Tap: %s" % _puzzle_order[0].capitalize()
+
+
+func _remove_puzzle_gui() -> void:
+	var overlay := get_node_or_null("PuzzleOverlay")
+	if overlay != null:
+		overlay.queue_free()
 
 func _reset_puzzle() -> void:
 	_puzzle_progress = 0
