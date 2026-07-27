@@ -102,7 +102,7 @@ func _draw_hp_bar(c: Dictionary, pos: Vector2, color: Color) -> void:
 
 	# Element icon (colored square)
 	var aff: String = str(c.get("affinity", "none"))
-	var aff_color := {"ember": Color(0.91,0.455,0.231), "frost": Color(0.435,0.718,0.91), "stone": Color(0.588,0.392,0.2), "storm": Color(0.85,0.85,0.2), "gale": Color(0.2,0.7,0.6), "lumen": Color(0.95,0.95,0.7), "umbra": Color(0.35,0.2,0.5)}.get(aff, Color(0.5,0.5,0.5))
+	var aff_color: Color = {"ember": Color(0.91,0.455,0.231), "frost": Color(0.435,0.718,0.91), "stone": Color(0.588,0.392,0.2), "storm": Color(0.85,0.85,0.2), "gale": Color(0.2,0.7,0.6), "lumen": Color(0.95,0.95,0.7), "umbra": Color(0.35,0.2,0.5)}.get(aff, Color(0.5,0.5,0.5))
 	var icon := ColorRect.new()
 	icon.position = pos
 	icon.size = Vector2(12, 12)
