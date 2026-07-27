@@ -104,6 +104,18 @@ func _map_cancel() -> void:
 	EventBus.scene_changed.emit("Town", {"pause": true})
 
 # --- UI (MVP: 5 node buttons; focus ring = parchment glow; locked = greyed) ---
+func _refresh_ui() -> void:
+	for i in NODES.size():
+		var btn = get_node_or_null("Nodes/" + NODES[i]["id"])
+		if btn == null:
+			continue
+		if bool(NODES[i]["locked"]):
+			btn.modulate = Color(0.5, 0.5, 0.5)
+		elif i == _focus:
+			btn.modulate = Color(1.0, 0.85, 0.5)
+		else:
+			btn.modulate = Color(1, 1, 1)
+
 func _add_town_background() -> void:
 	var existing := get_node_or_null("TownBackground")
 	if existing != null:
