@@ -22,7 +22,10 @@ func _show_victory_text() -> void:
 	txt.add_theme_color_override("font_color", Color(0.949, 0.851, 0.627, 1.0))
 	_gui.add_child(txt)
 	var timer := get_tree().create_timer(1.0)
-	timer.timeout.connect(func(): txt.queue_free())
+	timer.timeout.connect(func():
+		if is_instance_valid(txt):
+			txt.queue_free()
+	)
 
 func setup(state: Dictionary, rng: RNGService, callback: Object) -> void:
 	_state = state.duplicate(true)
