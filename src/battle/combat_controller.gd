@@ -9,6 +9,49 @@ var _callback: Object = null
 var _is_boss: bool = false
 var _outcome: String = "ongoing"
 var _gui: Control = null
+var _prev_hp: Dictionary = {}
+
+
+func _snapshot_hp() -> void:
+	_prev_hp.clear()
+	for c in _state.get("combatants", []):
+		_prev_hp[str(c.get("id", ""))] = int(c.get("HP", 0))
+
+
+func _show_damage_numbers() -> void:
+	for c in _state.get("combatants", []):
+		var cid := str(c.get("id", ""))
+		var before: int = int(_prev_hp.get(cid, int(c.get("HP", 0))))
+		var after: int = int(c.get("HP", 0))
+		var diff := before - after
+		if diff <= 0:
+			continue
+		var vs := get_viewport().get_visible_rect().size
+		var side := str(c.get("side", ""))
+		var x: float = 100.0 if side == "ally" else 540.0
+		var y: float = 100.0 + _combatant_index(cid) * 72.0
+		var label := Label.new()
+		label.text = "-%d" % diff
+		label.position = Vector2(x, y)
+		label.size = Vector2(80, 20)
+		label.add_theme_font_size_override("font_size", 16)
+		label.add_theme_color_override("font_color", Color(0.91, 0.455, 0.231, 1.0))
+		label.set_meta("damage_text", true)
+		_gui.add_child(label)
+		var tween := create_tween()
+		tween.tween_property(label, "position", Vector2(x, y - 30), 0.6)
+		tween.parallel().tween_property(label, "modulate", Color(1, 1, 1, 0), 0.6)
+		tween.tween_callback(func(): 
+			if is_instance_valid(label): 
+				label.queue_free()
+		)
+
+
+func _combatant_index(cid: String) -> int:
+	for i in _state.get("combatants", []).size():
+		if str(_state["combatants"][i].get("id", "")) == cid:
+			return i
+	return 0
 
 
 func _show_victory_text() -> void:
@@ -194,6 +237,7 @@ func _draw_hp_bar(c: Dictionary, pos: Vector2, color: Color) -> void:
 
 
 func _on_attack_pressed() -> void:
+	_snapshot_hp()
 	_resolve_all_allies()
 	if _outcome != "ongoing":
 		return
@@ -203,11 +247,12 @@ func _on_attack_pressed() -> void:
 	_clear_all_guard()
 	_refresh_display()
 	_flash_hit()
+	_show_damage_numbers()
 	_get_msg_label().text = "Tap Attack to continue."
 
 
 func _on_defend_pressed() -> void:
-	# Set guard directly — workaround for Godot 4.7 static method dispatch issue.
+	_snapshot_hp()
 	for c in _combatants_by_side("ally"):
 		c["guard"] = true
 	if _outcome != "ongoing":
@@ -222,6 +267,7 @@ func _on_defend_pressed() -> void:
 
 
 func _on_skill_pressed() -> void:
+	_snapshot_hp()
 	for c in _combatants_by_side("ally"):
 		if int(c.get("MP", 0)) < 4:
 			continue
@@ -241,6 +287,7 @@ func _on_skill_pressed() -> void:
 
 
 func _on_item_pressed() -> void:
+	_snapshot_hp()
 	var weakest := _pick_weakest_ally()
 	if weakest.is_empty():
 		return
