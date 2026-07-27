@@ -98,11 +98,12 @@ func _draw_hp_bar(c: Dictionary, pos: Vector2, color: Color) -> void:
 	var hp: int = int(c.get("HP", 0))
 	var ratio: float = clamp(float(hp) / float(max_hp), 0.0, 1.0)
 	var name: String = str(c.get("name", c.get("id", "?")))
+	var guard_tag := " [Defended]" if c.has("guard") else ""
 
 	var label := Label.new()
 	label.position = pos
 	label.size = Vector2(180, 16)
-	label.text = "%s  %d / %d" % [name, hp, max_hp]
+	label.text = "%s%s  %d / %d" % [name, guard_tag, hp, max_hp]
 	label.add_theme_font_size_override("font_size", 13)
 	label.add_theme_color_override("font_color", Color(0.949, 0.851, 0.627, 1.0))
 	label.set_meta("hp_bar", true)
@@ -145,7 +146,7 @@ func _on_defend_pressed() -> void:
 	if _outcome != "ongoing":
 		return
 	_refresh_display()
-	_get_msg_label().text = "Your turn."
+	_get_msg_label().text = "Defended! Your turn."
 
 
 func _resolve_all_allies() -> void:
