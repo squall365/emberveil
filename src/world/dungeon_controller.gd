@@ -56,6 +56,7 @@ func _enter_floor(floor_idx: int) -> void:
 	_rooms = floor_def.get("rooms", []) if not floor_def.is_empty() else []
 	_room_cursor = _frontier()
 	_refresh_ui()
+	_set_floor_background(floor_idx)
 
 func _floor_by_idx(floor_idx: int) -> Dictionary:
 	for f in _dungeon_def.get("floors", []):
@@ -427,3 +428,33 @@ static func _load_json(path: String) -> Variant:
 	var text := f.get_as_text()
 	f.close()
 	return JSON.parse_string(text)
+
+
+func _set_floor_background(floor_idx: int) -> void:
+	var bg_name := "dungeon_stone"
+	match floor_idx:
+		0, 1: bg_name = "dungeon_stone"
+		2, 3: bg_name = "dungeon_frost"
+		_:    bg_name = "dungeon_boss"
+	var path := "res://assets/backgrounds/" + bg_name + ".png"
+	if not FileAccess.file_exists(path.replace("res://", "")):
+		return
+	var tex := load(path)
+	if tex == null:
+		return
+	var parent := get_parent()
+	if parent == null:
+		return
+	var old := parent.get_node_or_null("DungeonBackground")
+	if old != null:
+		old.queue_free()
+	var bg := TextureRect.new()
+	bg.name = "DungeonBackground"
+	bg.texture = tex
+	bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	var vs := get_viewport().get_visible_rect().size
+	bg.position = Vector2.ZERO
+	bg.size = vs
+	bg.modulate = Color(1, 1, 1, 0.4)
+	parent.add_child(bg)
+	parent.move_child(bg, 0)
