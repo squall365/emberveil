@@ -125,7 +125,7 @@ func _start_battle(encounter_id: String, is_boss: bool) -> void:
 		"log": [],
 		"isBoss": is_boss
 	}
-	var battle := CombatController.new()
+	var battle: Node = load("res://src/battle/combat_controller.gd").new()
 	get_tree().get_root().add_child(battle)
 	battle.setup(state, rng, self)
 
