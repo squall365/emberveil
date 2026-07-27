@@ -97,29 +97,49 @@ func _draw_hp_bar(c: Dictionary, pos: Vector2, color: Color) -> void:
 	var ratio: float = clamp(float(hp) / float(max_hp), 0.0, 1.0)
 	var name: String = str(c.get("name", c.get("id", "?")))
 	var guard_tag := " [Defended]" if c.has("guard") else ""
+	var mp: int = int(c.get("MP", 0))
+	var max_mp: int = int(c.get("maxMP", 1))
 
 	var label := Label.new()
 	label.position = pos
-	label.size = Vector2(180, 16)
-	label.text = "%s%s  %d / %d" % [name, guard_tag, hp, max_hp]
-	label.add_theme_font_size_override("font_size", 13)
+	label.size = Vector2(180, 14)
+	label.text = "%s%s  %d/%d  MP:%d" % [name, guard_tag, hp, max_hp, mp]
+	label.add_theme_font_size_override("font_size", 11)
 	label.add_theme_color_override("font_color", Color(0.949, 0.851, 0.627, 1.0))
 	label.set_meta("hp_bar", true)
 	_gui.add_child(label)
 
+	# HP bar
 	var bar_bg := ColorRect.new()
-	bar_bg.position = Vector2(pos.x, pos.y + 17)
-	bar_bg.size = Vector2(180, 12)
+	bar_bg.position = Vector2(pos.x, pos.y + 15)
+	bar_bg.size = Vector2(124, 8)
 	bar_bg.color = Color(0.2, 0.2, 0.2, 1.0)
 	bar_bg.set_meta("hp_bar", true)
 	_gui.add_child(bar_bg)
 
 	var bar := ColorRect.new()
-	bar.position = Vector2(pos.x + 1, pos.y + 18)
-	bar.size = Vector2(178.0 * ratio, 10)
+	bar.position = Vector2(pos.x + 1, pos.y + 16)
+	bar.size = Vector2(122.0 * ratio, 6)
 	bar.color = color
 	bar.set_meta("hp_bar", true)
 	_gui.add_child(bar)
+
+	# MP bar (blue)
+	if max_mp > 0:
+		var mp_ratio: float = clamp(float(mp) / float(max_mp), 0.0, 1.0)
+		var mp_bg := ColorRect.new()
+		mp_bg.position = Vector2(pos.x + 132, pos.y + 15)
+		mp_bg.size = Vector2(44, 8)
+		mp_bg.color = Color(0.15, 0.15, 0.25, 1.0)
+		mp_bg.set_meta("hp_bar", true)
+		_gui.add_child(mp_bg)
+
+		var mp_bar := ColorRect.new()
+		mp_bar.position = Vector2(pos.x + 133, pos.y + 16)
+		mp_bar.size = Vector2(42.0 * mp_ratio, 6)
+		mp_bar.color = Color(0.4, 0.6, 0.9, 1.0)
+		mp_bar.set_meta("hp_bar", true)
+		_gui.add_child(mp_bar)
 
 
 func _on_attack_pressed() -> void:
