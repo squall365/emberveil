@@ -199,10 +199,7 @@ func _check_end() -> bool:
 		_get_msg_label().text = "Victory!"
 		if _is_boss:
 			_get_msg_label().text = "Victory! Stone Sigil obtained!"
-			var t := SceneTreeTimer.new()
-			t.timeout.connect(_finish)
-			get_tree().root.add_child(t)
-			t.start(2.0)
+			get_tree().create_timer(2.0).timeout.connect(_finish)
 			return true
 		call_deferred("_finish")
 		return true
