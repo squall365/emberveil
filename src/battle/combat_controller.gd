@@ -136,12 +136,9 @@ func _on_attack_pressed() -> void:
 
 
 func _on_defend_pressed() -> void:
-	print("[Combat] Defend pressed, allies=", _combatants_by_side("ally").size())
+	# Set guard directly — workaround for Godot 4.7 static method dispatch issue.
 	for c in _combatants_by_side("ally"):
-		print("[Combat] calling resolve_action for ", c.get("id"))
-		var action := {"actorId": str(c.get("id", "")), "type": "Defend", "targetIds": []}
-		var res: Array = BattleResolver.resolve_action(_state, action, _rng)
-		_state = res[0]
+		c["guard"] = true
 	if _outcome != "ongoing":
 		return
 	_resolve_all_enemies()
