@@ -15,8 +15,8 @@ func setup(state: Dictionary, rng: RNGService, callback: Object) -> void:
 	_rng = rng
 	_callback = callback
 	_is_boss = bool(_state.get("isBoss", false))
-	_build_gui()
-	_refresh_display()
+	# Defer GUI build so get_viewport() has valid rect (not 0x0 during setup).
+	call_deferred("_build_gui")
 
 func _build_gui() -> void:
 	var vs := get_viewport().get_visible_rect().size
@@ -61,6 +61,7 @@ func _build_gui() -> void:
 	msg.add_theme_color_override("font_color", Color(0.851, 0.851, 0.851, 1.0))
 	msg.text = "Tap Attack to begin."
 	_gui.add_child(msg)
+	_refresh_display()
 
 func _refresh_display() -> void:
 	for c in _gui.get_children():
