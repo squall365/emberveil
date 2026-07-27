@@ -53,8 +53,22 @@ func _build_gui() -> void:
 	defend_btn.text = "Defend"
 	defend_btn.position = Vector2(vs.x - 170, vs.y - 60)
 	defend_btn.size = Vector2(140, 44)
+	defend_btn.pressed.connect(_on_defend_pressed)
 	_gui.add_child(defend_btn)
-	# Defend placeholder for Sprint 3; wired later.
+
+	var skill_btn := Button.new()
+	skill_btn.text = "Skill"
+	skill_btn.position = Vector2(vs.x - 320, vs.y - 110)
+	skill_btn.size = Vector2(140, 44)
+	skill_btn.disabled = true
+	_gui.add_child(skill_btn)
+
+	var item_btn := Button.new()
+	item_btn.text = "Item"
+	item_btn.position = Vector2(vs.x - 170, vs.y - 110)
+	item_btn.size = Vector2(140, 44)
+	item_btn.disabled = true
+	_gui.add_child(item_btn)
 
 	# Message label at bottom
 	var msg := Label.new()
@@ -118,6 +132,20 @@ func _on_attack_pressed() -> void:
 		return
 	_refresh_display()
 	_get_msg_label().text = "Tap Attack to continue."
+
+
+func _on_defend_pressed() -> void:
+	for c in _combatants_by_side("ally"):
+		var action := {"actorId": str(c.get("id", "")), "type": "Defend", "targetIds": []}
+		var res: Array = BattleResolver.resolve_action(_state, action, _rng)
+		_state = res[0]
+	if _outcome != "ongoing":
+		return
+	_resolve_all_enemies()
+	if _outcome != "ongoing":
+		return
+	_refresh_display()
+	_get_msg_label().text = "Your turn."
 
 
 func _resolve_all_allies() -> void:
