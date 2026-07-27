@@ -90,10 +90,12 @@ func _enter_current_room() -> void:
 		return
 	_current_room_id = str(room.get("id", ""))
 	_current_room_idx = _room_cursor
+	print("[Dungeon] entering room: ", _current_room_id, " cleared? ", _session_cleared.has(_current_room_id))
 	if _session_cleared.has(_current_room_id):
 		return  # already done this session; door open, no re-trigger
 	match str(room.get("type", "")):
 		"combat":
+			print("[Dungeon] starting combat for ", room.get("encounterId", ""))
 			_start_battle(str(room.get("encounterId", "")), false)
 		"boss":
 			if not _session_cleared.has(_current_room_id):
@@ -105,6 +107,7 @@ func _enter_current_room() -> void:
 
 # ---- battle launch (E9.4) ----
 func _start_battle(encounter_id: String, is_boss: bool) -> void:
+	print("[Dungeon] _start_battle: ", encounter_id, " isBoss=", is_boss)
 	_current_encounter_id = encounter_id
 	_current_is_boss = is_boss
 	var party: Array = PartyManager.build_party_combatants()
@@ -364,6 +367,7 @@ func _refresh_ui() -> void:
 		rooms_node.add_child(btn)
 
 func _on_room_button_pressed(idx: int) -> void:
+	print("[Dungeon] room button pressed: idx=", idx)
 	_room_cursor = idx
 	_refresh_ui()
 	_enter_current_room()
