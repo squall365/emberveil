@@ -117,7 +117,7 @@ static func resolve_action(state: Dictionary, action: Dictionary, rng: RNGServic
 		# Affinity-guarded damage reduction (Defend from a previous turn).
 		if target.has("guard"):
 			dmg = int(float(dmg) * GUARD_MULT)
-			target.erase("guard")
+			# Guard persists for all hits this round; cleared by caller.
 		target["HP"] = max(0, int(target.get("HP", 0)) - dmg)
 		events.append({"actor": actor_id, "target": str(tid), "type": atype, "dmg": dmg})
 		log_entries.append("%s %s -> %s for %d" % [actor_id, atype, str(tid), dmg])

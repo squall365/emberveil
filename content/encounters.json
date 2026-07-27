@@ -1,37 +1,67 @@
 [
   {
     "id": "sw_f0_combat",
-    "enemyIds": ["huskling", "wisp"],
+    "enemyIds": [
+      "huskling",
+      "wisp"
+    ],
     "isBoss": false,
-    "xpValue": 16,
-    "drops": {"gold": 10, "items": []}
+    "xpValue": 24,
+    "drops": {
+      "gold": 13,
+      "items": []
+    }
   },
   {
     "id": "sw_f1_combat",
-    "enemyIds": ["frostmote", "stoneling"],
+    "enemyIds": [
+      "frostmote",
+      "stoneling"
+    ],
     "isBoss": false,
-    "xpValue": 22,
-    "drops": {"gold": 15, "items": []}
+    "xpValue": 33,
+    "drops": {
+      "gold": 19,
+      "items": []
+    }
   },
   {
     "id": "sw_f2_combat",
-    "enemyIds": ["stormling", "galekin"],
+    "enemyIds": [
+      "stormling",
+      "galekin"
+    ],
     "isBoss": false,
-    "xpValue": 26,
-    "drops": {"gold": 20, "items": []}
+    "xpValue": 39,
+    "drops": {
+      "gold": 20,
+      "items": []
+    }
   },
   {
     "id": "sw_f3_combat",
-    "enemyIds": ["huskling", "frostmote", "stoneling"],
+    "enemyIds": [
+      "huskling",
+      "frostmote",
+      "stoneling"
+    ],
     "isBoss": false,
-    "xpValue": 30,
-    "drops": {"gold": 25, "items": []}
+    "xpValue": 45,
+    "drops": {
+      "gold": 25,
+      "items": []
+    }
   },
   {
     "id": "sw_f3_boss",
-    "enemyIds": ["sigil_twisted_warden"],
+    "enemyIds": [
+      "sigil_twisted_warden"
+    ],
     "isBoss": true,
-    "xpValue": 120,
-    "drops": {"gold": 100, "items": []}
+    "xpValue": 180,
+    "drops": {
+      "gold": 100,
+      "items": []
+    }
   }
 ]

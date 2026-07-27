@@ -129,6 +129,7 @@ func _on_attack_pressed() -> void:
 	_resolve_all_enemies()
 	if _outcome != "ongoing":
 		return
+	_clear_all_guard()
 	_refresh_display()
 	_get_msg_label().text = "Tap Attack to continue."
 
@@ -143,6 +144,7 @@ func _on_defend_pressed() -> void:
 	_resolve_all_enemies()
 	if _outcome != "ongoing":
 		return
+	_clear_all_guard()
 	_refresh_display()
 	_get_msg_label().text = "Defended! Your turn."
 
@@ -214,6 +216,12 @@ func _combatants_by_side(side: String) -> Array:
 		if str(c.get("side", "")) == side and int(c.get("HP", 0)) > 0:
 			out.append(c)
 	return out
+
+
+func _clear_all_guard() -> void:
+	for c in _state.get("combatants", []):
+		if c.has("guard"):
+			c.erase("guard")
 
 
 func _get_msg_label() -> Label:
