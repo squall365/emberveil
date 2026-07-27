@@ -379,10 +379,6 @@ func _map_move(dir: String) -> void:
 		_move_cursor(1)
 
 func _map_accept() -> void:
-	if _in_puzzle:
-		if _puzzle_progress < _puzzle_order.size():
-			_on_stone_tapped(str(_puzzle_order[_stone_focus]))
-		return
 	_enter_current_room()
 
 func _map_cancel() -> void:
