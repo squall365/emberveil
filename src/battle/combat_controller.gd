@@ -10,6 +10,20 @@ var _is_boss: bool = false
 var _outcome: String = "ongoing"
 var _gui: Control = null
 
+
+func _show_victory_text() -> void:
+	var vs := get_viewport().get_visible_rect().size
+	var txt := Label.new()
+	txt.text = "VICTORY!"
+	txt.position = Vector2(vs.x / 2.0 - 120, vs.y / 2.0 - 30)
+	txt.size = Vector2(240, 60)
+	txt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	txt.add_theme_font_size_override("font_size", 48)
+	txt.add_theme_color_override("font_color", Color(0.949, 0.851, 0.627, 1.0))
+	_gui.add_child(txt)
+	var timer := get_tree().create_timer(1.0)
+	timer.timeout.connect(func(): txt.queue_free())
+
 func setup(state: Dictionary, rng: RNGService, callback: Object) -> void:
 	_state = state.duplicate(true)
 	_rng = rng
@@ -309,6 +323,7 @@ func _check_end() -> bool:
 				any_ally = true
 	if not any_enemy:
 		_outcome = "win"
+		_show_victory_text()
 		_get_msg_label().text = "Victory!"
 		if _is_boss:
 			_get_msg_label().text = "Victory! Stone Sigil obtained!"
