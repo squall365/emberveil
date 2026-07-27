@@ -32,14 +32,31 @@ func _ready() -> void:
 
 	# Start button
 	var btn := Button.new()
-	btn.text = "Start"
+	btn.text = "New Game"
 	btn.position = Vector2(cx - 110, vs.y * 0.55)
 	btn.size = Vector2(220, 48)
 	btn.pressed.connect(_on_start_pressed)
 	add_child(btn)
 
+	# Continue button (only if save exists)
+	if SaveManager.has_save():
+		var cont := Button.new()
+		cont.text = "Continue"
+		cont.position = Vector2(cx - 110, vs.y * 0.55 + 56)
+		cont.size = Vector2(220, 48)
+		cont.pressed.connect(_on_continue_pressed)
+		add_child(cont)
+
 
 func _on_start_pressed() -> void:
 	SceneManager.new_run_confirmed()
-	# Defer the scene swap; Godot 4.7 complains about busy parent otherwise.
+	get_tree().call_deferred("change_scene_to_file", "res://scenes/world/World.tscn")
+
+
+func _on_continue_pressed() -> void:
+	var rs: Dictionary = SaveManager.load()
+	if rs.is_empty():
+		return
+	SceneManager.commit_run_state(rs)
+	SceneManager.go_to("Town")
 	get_tree().call_deferred("change_scene_to_file", "res://scenes/world/World.tscn")
