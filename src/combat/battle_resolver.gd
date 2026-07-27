@@ -48,6 +48,7 @@ static func resolve_action(state: Dictionary, action: Dictionary, rng: RNGServic
 	var events: Array = []
 
 	if actor.is_empty():
+		print("[Resolver] actor NOT FOUND: ", actor_id, " in ", new_state.get("combatants", []).size(), " combatants")
 		log_entries.append("error: no actor %s" % actor_id)
 		new_state["log"] = log_entries
 		return [new_state, events]
