@@ -38,7 +38,6 @@ static func elemental_damage(caster: Dictionary, defender: Dictionary, spell: Di
 # Resolve a single action against a battle state. Returns [new_state, events].
 # new_state is a deep copy; the input state is never mutated (pure).
 static func resolve_action(state: Dictionary, action: Dictionary, rng: RNGService) -> Array:
-	print("!!! [Resolver] ENTERED, type=", action.get("type", "?"), " actor=", action.get("actorId", "?"))
 	var new_state: Dictionary = state.duplicate(true)
 	var log_entries: Array = new_state.get("log", [])
 	if typeof(log_entries) != TYPE_ARRAY:
@@ -49,7 +48,6 @@ static func resolve_action(state: Dictionary, action: Dictionary, rng: RNGServic
 	var events: Array = []
 
 	if actor.is_empty():
-		print("[Resolver] actor NOT FOUND: ", actor_id, " in ", new_state.get("combatants", []).size(), " combatants")
 		log_entries.append("error: no actor %s" % actor_id)
 		new_state["log"] = log_entries
 		return [new_state, events]
@@ -96,7 +94,6 @@ static func resolve_action(state: Dictionary, action: Dictionary, rng: RNGServic
 			"Defend":
 				# No damage. Guard halves the NEXT incoming hit on this actor.
 				actor["guard"] = true
-				print("[Resolver] guard SET on ", str(actor_id))
 				events.append({"actor": actor_id, "target": str(tid), "type": atype, "dmg": 0})
 				log_entries.append("%s guards" % actor_id)
 				continue
@@ -119,7 +116,6 @@ static func resolve_action(state: Dictionary, action: Dictionary, rng: RNGServic
 				continue
 		# Affinity-guarded damage reduction (Defend from a previous turn).
 		if target.has("guard"):
-			print("[Resolver] guard ACTIVE for ", str(tid), " origDmg=", dmg, " halved=", int(float(dmg) * GUARD_MULT))
 			dmg = int(float(dmg) * GUARD_MULT)
 			# Guard persists for all hits this round; cleared by caller.
 		target["HP"] = max(0, int(target.get("HP", 0)) - dmg)

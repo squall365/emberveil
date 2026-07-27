@@ -123,7 +123,6 @@ func _draw_hp_bar(c: Dictionary, pos: Vector2, color: Color) -> void:
 
 
 func _on_attack_pressed() -> void:
-	print("[Combat] Attack pressed")
 	_resolve_all_allies()
 	if _outcome != "ongoing":
 		return
