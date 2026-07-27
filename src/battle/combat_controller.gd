@@ -35,11 +35,12 @@ func _build_gui() -> void:
 	_gui.add_child(bg)
 
 	var label := Label.new()
+	label.name = "Title"
 	label.position = Vector2(20, 20)
 	label.size = Vector2(vs.x - 40, 28)
-	label.add_theme_font_size_override("font_size", 18)
+	label.add_theme_font_size_override("font_size", 22 if _is_boss else 18)
 	label.add_theme_color_override("font_color", Color(0.949, 0.851, 0.627, 1.0))
-	label.text = "Battle: %s" % ("Boss fight!" if _is_boss else "Enemy encounter")
+	label.text = "Boss: Sigil-Twisted Warden" if _is_boss else "Battle: Enemy encounter"
 	_gui.add_child(label)
 
 	var btn := Button.new()
@@ -196,6 +197,13 @@ func _check_end() -> bool:
 	if not any_enemy:
 		_outcome = "win"
 		_get_msg_label().text = "Victory!"
+		if _is_boss:
+			_get_msg_label().text = "Victory! Stone Sigil obtained!"
+			var t := SceneTreeTimer.new()
+			t.timeout.connect(_finish)
+			get_tree().root.add_child(t)
+			t.start(2.0)
+			return true
 		call_deferred("_finish")
 		return true
 	if not any_ally:
