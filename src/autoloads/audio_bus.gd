@@ -1,5 +1,5 @@
 extends Node
-# class_name AudioBus
+class_name AudioBus
 # Placeholder audio events (ux-spec §6.1). No audio assets in Sprint 1; play() is a no-op
 # contract so call sites compile. Event names are the stable interface for Sprint 2.
 

@@ -1,5 +1,5 @@
 extends Node
-# class_name WardCodex
+class_name WardCodex
 # Shared sigil Set + resonance (GDD Ward Codex). Holds attunement state for the active run.
 # Sprint 1: structure + pure helpers; persistence flows through RunState.codex.
 

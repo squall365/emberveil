@@ -1,5 +1,5 @@
 extends Node
-# class_name SaveManager
+class_name SaveManager
 # Persistent save/load (ADR-004). Single local slot, pure offline.
 # JSON to localStorage key "emberveil.save.v1" (web) or in-memory (headless/tests).
 # Schema v1. Safe-node-only writes. CRC32 integrity check; tamper => refuse.

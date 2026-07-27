@@ -1,5 +1,5 @@
 extends Node
-# class_name WorldDirector
+class_name WorldDirector
 # Town + Dungeon routing (E2-L/M). Delegates logical state to SceneManager and physically
 # mounts Town/Dungeon as children of the resident World node (architecture 2.2). Sprint 2
 # (E9.1): real scene swaps via _swap_world_child; GAP-4 no-arg resume to saved floor;
